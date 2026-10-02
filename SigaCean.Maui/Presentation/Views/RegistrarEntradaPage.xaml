@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             x:Class="SigaCean.Presentation.Views.RegistrarEntradaPage"
+             Title="Registrar Entrada">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18" MaximumWidthRequest="900">
+
+            <views:VoltarButton />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Registrar entrada" Style="{StaticResource PageTitle}" />
+                <Label Text="Adicione produtos ao estoque." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Dados da entrada" Style="{StaticResource CardTitle}" />
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="15" RowSpacing="15">
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Produto" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <views:ProdutoSeletor x:Name="ProdutoSeletorControl" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Quantidade" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <Entry x:Name="QuantidadeEntry" Keyboard="Numeric" Placeholder="Ex.: 10" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Tipo de origem" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <Picker x:Name="TipoOrigemPicker" Title="Selecione o tipo" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
+                            <Label Text="Número AF" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="NumeroAfEntry" Placeholder="Somente para compra (opcional)" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="6">
+                            <Label Text="Detalhe da origem" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="DetalheOrigemEntry" Placeholder="Ex.: nome do doador ou do departamento (opcional)" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="6">
+                            <Label Text="Documento (nota fiscal / pedido)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="DocumentoEntry" Placeholder="Nº da nota fiscal ou do pedido (opcional)" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="6">
+                            <Label Text="Lote" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="LoteEntry" Placeholder="Código do lote (opcional)" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
+                            <HorizontalStackLayout Spacing="8">
+                                <Switch x:Name="PossuiValidadeSwitch" Toggled="OnPossuiValidadeToggled" />
+                                <Label Text="Possui data de validade" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <DatePicker x:Name="ValidadeDatePicker" IsVisible="False" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <Label x:Name="MensagemErroLabel" TextColor="{StaticResource Red}" IsVisible="False" />
+                </VerticalStackLayout>
+            </Border>
+
+            <HorizontalStackLayout HorizontalOptions="End">
+                <Button Text="✓ Registrar entrada" Style="{StaticResource GreenButton}" Clicked="OnRegistrarClicked" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

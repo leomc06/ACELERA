@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             x:Class="SigaCean.Presentation.Views.CadastrarProdutoPage"
+             Title="Cadastrar Produto">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18" MaximumWidthRequest="900">
+
+            <views:VoltarButton />
+
+            <VerticalStackLayout Spacing="4">
+                <Label x:Name="TituloLabel" Text="Cadastrar produto" Style="{StaticResource PageTitle}" />
+                <Label Text="Cadastro e manutenção dos produtos." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Dados do produto" Style="{StaticResource CardTitle}" />
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="15">
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Nome" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <Entry x:Name="NomeEntry" Placeholder="Ex.: Dipirona 500mg" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Categoria" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <Picker x:Name="CategoriaPicker" Title="Selecione a categoria" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="6">
+                            <Label Text="Apresentação / Especificação" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="ApresentacaoEntry" Placeholder="Ex.: Injetável, ampola (opcional)" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
+                            <Label Text="Estoque mínimo" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="EstoqueMinimoEntry" Keyboard="Numeric" Placeholder="Ex.: 50 (opcional)" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <Label x:Name="MensagemErroLabel" TextColor="{StaticResource Red}" IsVisible="False" />
+                </VerticalStackLayout>
+            </Border>
+
+            <HorizontalStackLayout HorizontalOptions="End">
+                <Button Text="Salvar produto" Style="{StaticResource PrimaryButton}" Clicked="OnSalvarClicked" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

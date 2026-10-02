@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             x:Class="SigaCean.Presentation.Views.AjusteBalancoPage"
+             Title="Ajuste de Balanço">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18" MaximumWidthRequest="900">
+
+            <views:VoltarButton />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Ajuste de balanço" Style="{StaticResource PageTitle}" />
+                <Label Text="Corrija o estoque com base na contagem física." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Dados do ajuste" Style="{StaticResource CardTitle}" />
+
+                    <VerticalStackLayout Spacing="6">
+                        <HorizontalStackLayout Spacing="2">
+                            <Label Text="Produto" Style="{StaticResource FieldLabel}" />
+                            <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                        </HorizontalStackLayout>
+                        <views:ProdutoSeletor x:Name="ProdutoSeletorControl" ProdutoSelecionadoChanged="OnProdutoSelecionado" />
+                        <Label x:Name="QuantidadeAtualLabel" Style="{StaticResource MutedLabel}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="6">
+                        <HorizontalStackLayout Spacing="2">
+                            <Label Text="Quantidade apurada na contagem" Style="{StaticResource FieldLabel}" />
+                            <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                        </HorizontalStackLayout>
+                        <Entry x:Name="QuantidadeApuradaEntry" Keyboard="Numeric" Placeholder="Ex.: 27" TextChanged="OnQuantidadeApuradaChanged" />
+                        <Label x:Name="DiferencaLabel" Style="{StaticResource MutedLabel}" />
+                    </VerticalStackLayout>
+
+                    <Label x:Name="MensagemErroLabel" TextColor="{StaticResource Red}" IsVisible="False" />
+                </VerticalStackLayout>
+            </Border>
+
+            <HorizontalStackLayout HorizontalOptions="End">
+                <Button Text="Registrar ajuste" Style="{StaticResource PrimaryButton}" Clicked="OnRegistrarClicked" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

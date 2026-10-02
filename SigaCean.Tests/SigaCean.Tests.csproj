@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <!-- Camadas sem dependência de MAUI, compiladas direto do projeto do app. -->
+  <ItemGroup>
+    <Compile Include="..\SigaCean.Maui\Domain\**\*.cs" LinkBase="Domain" />
+    <Compile Include="..\SigaCean.Maui\Services\**\*.cs" LinkBase="Services" />
+    <Compile Include="..\SigaCean.Maui\Infrastructure\**\*.cs" LinkBase="Infrastructure" />
+    <Compile Include="..\SigaCean.Maui\Presentation\Reports\**\*.cs" LinkBase="Reports" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PDFsharp-MigraDoc" Version="6.2.4" />
+  </ItemGroup>
+
+</Project>

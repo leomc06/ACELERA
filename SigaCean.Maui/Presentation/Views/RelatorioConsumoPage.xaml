@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SigaCean.Presentation.ViewModels"
+             x:Class="SigaCean.Presentation.Views.RelatorioConsumoPage"
+             Title="Relatório de Consumo">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18">
+
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0" Text="CEAN • CENTRO DE APOIO AOS ANIMAIS" Style="{StaticResource EyebrowLabel}" VerticalOptions="Center" />
+                <HorizontalStackLayout Grid.Column="1" Spacing="9" VerticalOptions="Center">
+                    <Border StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Padding="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
+                        <Label x:Name="UsuarioInicialLabel" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                    </Border>
+                    <VerticalStackLayout Spacing="0">
+                        <Label x:Name="UsuarioNomeLabel" FontSize="12" />
+                        <Label x:Name="UsuarioPerfilLabel" Style="{StaticResource MutedLabel}" FontSize="10" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Grid>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Relatório de Consumo" Style="{StaticResource PageTitle}" />
+                <Label Text="Consultas gerenciais do estoque." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <Border Padding="16">
+                <VerticalStackLayout Spacing="12">
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Tipo de relatório" Style="{StaticResource FieldLabel}" />
+                        <FlexLayout Wrap="Wrap">
+                            <Button x:Name="MensalButton" Style="{StaticResource PrimaryButton}" Text="Mensal" Clicked="OnTipoPeriodoClicked" CommandParameter="Mensal" Margin="0,0,8,8" />
+                            <Button x:Name="TrimestralButton" Style="{StaticResource PrimaryButton}" Text="Trimestral" Clicked="OnTipoPeriodoClicked" CommandParameter="Trimestral" Margin="0,0,8,8" />
+                            <Button x:Name="AnualButton" Style="{StaticResource PrimaryButton}" Text="Anual" Clicked="OnTipoPeriodoClicked" CommandParameter="Anual" Margin="0,0,8,8" />
+                            <Button x:Name="PersonalizadoButton" Style="{StaticResource PrimaryButton}" Text="Período personalizado" Clicked="OnTipoPeriodoClicked" CommandParameter="Personalizado" Margin="0,0,8,8" />
+                        </FlexLayout>
+                    </VerticalStackLayout>
+
+                    <Grid x:Name="NavegacaoPeriodoLayout" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Button Grid.Column="0" Text="◀  Anterior" Style="{StaticResource PrimaryButton}" Clicked="OnPeriodoAnteriorClicked" />
+                        <Label Grid.Column="1" x:Name="PeriodoLabel" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                        <Button Grid.Column="2" Text="Próximo  ▶" Style="{StaticResource PrimaryButton}" Clicked="OnPeriodoProximoClicked" />
+                    </Grid>
+
+                    <Grid x:Name="PersonalizadoLayout" ColumnDefinitions="*,*,Auto" ColumnSpacing="10" IsVisible="False">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="De" Style="{StaticResource FieldLabel}" />
+                            <DatePicker x:Name="DataInicioPicker" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Até" Style="{StaticResource FieldLabel}" />
+                            <DatePicker x:Name="DataFimPicker" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2" Text="Gerar Relatório" Style="{StaticResource PrimaryButton}" Clicked="OnGerarClicked" VerticalOptions="End" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Categoria" Style="{StaticResource FieldLabel}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="Ordenar por" Style="{StaticResource FieldLabel}" />
+                        <Picker Grid.Row="1" Grid.Column="0" x:Name="CategoriaPicker" Title="Todas as categorias" SelectedIndexChanged="OnFiltroChanged" />
+                        <Picker Grid.Row="1" Grid.Column="1" x:Name="OrdemPicker" Title="Nome do produto" SelectedIndexChanged="OnFiltroChanged" />
+                    </Grid>
+
+                    <Label x:Name="MensagemLabel" IsVisible="False" Style="{StaticResource MutedLabel}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Resumo do período" Style="{StaticResource CardTitle}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" x:Name="GerarPdfButton" Text="Gerar PDF" Style="{StaticResource GreenButton}" Clicked="OnGerarPdfClicked" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label x:Name="ResumoProdutosLabel" FontSize="22" FontAttributes="Bold" />
+                            <Label Text="Produtos" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label x:Name="ResumoEntradasLabel" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Green}" />
+                            <Label Text="Entradas" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label x:Name="ResumoSaidasLabel" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Red}" />
+                            <Label Text="Saídas" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="3">
+                            <Label x:Name="ResumoAjustesLabel" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Orange}" />
+                            <Label Text="Ajustes" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Consumo por produto" Style="{StaticResource CardTitle}" />
+                    <Entry x:Name="PesquisaEntry" Placeholder="Pesquisar por produto..." TextChanged="OnPesquisaTextChanged" />
+                    <Label x:Name="SemResultadosLabel" Text="Nenhuma movimentação encontrada no período." Style="{StaticResource MutedLabel}" IsVisible="False" />
+
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="12">
+                        <Label Grid.Column="0" Text="Produto" Style="{StaticResource FieldLabel}" />
+                        <Label Grid.Column="1" Text="Entradas" Style="{StaticResource FieldLabel}" WidthRequest="64" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="2" Text="Saídas" Style="{StaticResource FieldLabel}" WidthRequest="64" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="3" Text="Ajustes" Style="{StaticResource FieldLabel}" WidthRequest="64" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="4" Text="Média/mês" Style="{StaticResource FieldLabel}" WidthRequest="72" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="5" Text="Estoque" Style="{StaticResource FieldLabel}" WidthRequest="64" HorizontalTextAlignment="End" />
+                    </Grid>
+
+                    <CollectionView x:Name="RelatorioCollectionView">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:RelatorioConsumoItem">
+                                <Border Margin="0,4" Padding="12">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="12">
+                                        <Label Grid.Column="0" Text="{Binding ProdutoNome}" FontAttributes="Bold" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding EntradasTexto}" TextColor="{StaticResource Green}" WidthRequest="64" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="{Binding SaidasTexto}" TextColor="{StaticResource Red}" WidthRequest="64" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                        <Label Grid.Column="3" Text="{Binding AjustesTexto}" TextColor="{StaticResource Orange}" WidthRequest="64" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                        <Label Grid.Column="4" Text="{Binding MediaMensalTexto}" WidthRequest="72" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                        <Label Grid.Column="5" Text="{Binding EstoqueAtualTexto}" FontAttributes="Bold" WidthRequest="64" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

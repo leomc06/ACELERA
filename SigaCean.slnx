@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SigaCean.Maui/SigaCean.csproj" />
+  <Project Path="SigaCean.Tests/SigaCean.Tests.csproj" />
+</Solution>

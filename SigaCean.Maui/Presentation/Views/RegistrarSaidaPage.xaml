@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             x:Class="SigaCean.Presentation.Views.RegistrarSaidaPage"
+             Title="Registrar Saída">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18" MaximumWidthRequest="900">
+
+            <views:VoltarButton />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Registrar saída" Style="{StaticResource PageTitle}" />
+                <Label Text="Registre a retirada de produtos." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Dados da saída" Style="{StaticResource CardTitle}" />
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="15">
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Produto" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <views:ProdutoSeletor x:Name="ProdutoSeletorControl" ProdutoSelecionadoChanged="OnProdutoSelecionado" />
+                            <Label x:Name="DisponivelLabel" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Quantidade" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <Entry x:Name="QuantidadeEntry" Keyboard="Numeric" Placeholder="Ex.: 5" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Destino" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <Entry x:Name="DestinoEntry" Placeholder="Ex.: CEAN; Canil" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Retirado por" Style="{StaticResource FieldLabel}" />
+                                <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                            <Entry x:Name="RetiradoPorEntry" Placeholder="Nome de quem levou o produto" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <Label x:Name="MensagemErroLabel" TextColor="{StaticResource Red}" IsVisible="False" />
+                </VerticalStackLayout>
+            </Border>
+
+            <HorizontalStackLayout HorizontalOptions="End">
+                <Button Text="✓ Registrar saída" Style="{StaticResource OrangeButton}" Clicked="OnRegistrarClicked" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,9 @@
+﻿# Pastas geradas pelo build e pelo Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# Projeto WPF antigo (abandonado; o sistema usa .NET MAUI), fora da solution
+/SigaCean/

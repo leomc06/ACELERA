@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SigaCean.Presentation.Views.LoginPage"
+             Title="SIGA-CEAN"
+             NavigationPage.HasNavigationBar="False">
+
+    <VerticalStackLayout
+        Padding="40"
+        Spacing="18"
+        VerticalOptions="Center"
+        MaximumWidthRequest="380"
+        HorizontalOptions="Center">
+
+        <Image Source="cean_logo.png" HeightRequest="70" Aspect="AspectFit" />
+
+        <Label Text="SIGA-CEAN" Style="{StaticResource Headline}" HorizontalOptions="Center" />
+        <Label Text="Sistema Integrado de Gest&#227;o de Estoque" Style="{StaticResource SubHeadline}" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+
+        <Border Padding="20">
+            <VerticalStackLayout Spacing="14">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Usuário" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="LoginEntry" Placeholder="Usu&#225;rio" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Senha" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="SenhaEntry" Placeholder="Senha" IsPassword="True" />
+                </VerticalStackLayout>
+
+                <Label x:Name="MensagemErroLabel" TextColor="{StaticResource Red}" IsVisible="False" HorizontalOptions="Center" />
+
+                <Button Text="Entrar" Style="{StaticResource PrimaryButton}" Clicked="OnEntrarClicked" HorizontalOptions="Fill" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Label Text="Exemplo: admin/admin123 (administrativo) ou vet/vet123 (veterin&#225;rio)"
+               Style="{StaticResource MutedLabel}" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

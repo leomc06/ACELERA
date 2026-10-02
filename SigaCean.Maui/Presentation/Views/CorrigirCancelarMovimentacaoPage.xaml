@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             x:Class="SigaCean.Presentation.Views.CorrigirCancelarMovimentacaoPage"
+             Title="Corrigir/Cancelar Movimentação">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18" MaximumWidthRequest="900">
+
+            <views:VoltarButton />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Corrigir/Cancelar Movimentação" Style="{StaticResource PageTitle}" />
+                <Label Text="Informe o motivo. O efeito desta movimentação no estoque será desfeito." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Movimentação selecionada" Style="{StaticResource CardTitle}" />
+
+                    <Border Padding="12" BackgroundColor="{StaticResource InfoBackground}" Stroke="Transparent">
+                        <VerticalStackLayout Spacing="4">
+                            <Label x:Name="TipoProdutoLabel" FontAttributes="Bold" FontSize="16" />
+                            <Label x:Name="DetalheLabel" Style="{StaticResource MutedLabel}" />
+                            <Label x:Name="DataLabel" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Spacing="6">
+                        <HorizontalStackLayout Spacing="2">
+                            <Label Text="Motivo" Style="{StaticResource FieldLabel}" />
+                            <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
+                        </HorizontalStackLayout>
+                        <Editor x:Name="MotivoEditor" AutoSize="TextChanges" Placeholder="Descreva o motivo da correção ou cancelamento" />
+                    </VerticalStackLayout>
+
+                    <Label x:Name="ErroLabel" TextColor="{StaticResource Red}" IsVisible="False" />
+                </VerticalStackLayout>
+            </Border>
+
+            <HorizontalStackLayout HorizontalOptions="End" Spacing="8">
+                <Button Text="Cancelar Movimentação" Style="{StaticResource RedButton}" Clicked="OnCancelarClicked" />
+                <Button Text="Corrigir Movimentação" Style="{StaticResource PrimaryButton}" Clicked="OnCorrigirClicked" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

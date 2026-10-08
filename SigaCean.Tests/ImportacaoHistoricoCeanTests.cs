@@ -99,7 +99,7 @@ public class ImportacaoHistoricoCeanTests
     public void Importar_NaoAlteraOEstoqueDosProdutos()
     {
         var p = NovoProduto();
-        p.AdicionarQuantidade(10, null, null);
+        p.AdicionarQuantidade(10, null);
 
         ImportadorHistoricoCean.Importar([p], [Linha(true, 500, "BALANÇO"), Linha(false, 4, "CEAN; CANIL")]);
 

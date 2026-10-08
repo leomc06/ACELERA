@@ -24,9 +24,10 @@ public class DataStore
         // Produtos e quantidades reais da planilha do CEAN (aba "ESTOQUE DE MEDICAMENTOS").
         foreach (var (nome, quantidade) in DadosCean.Medicamentos)
         {
-            var produto = new Produto { Nome = nome, Categoria = CategoriaProduto.Medicamento };
+            var categoria = DadosCean.CategoriaDiferenteDeMedicamento.GetValueOrDefault(nome, CategoriaProduto.Medicamento);
+            var produto = new Produto { Nome = nome, Categoria = categoria };
             if (quantidade > 0)
-                produto.AdicionarQuantidade(quantidade, null, null);
+                produto.AdicionarQuantidade(quantidade, null);
             Produtos.Add(produto);
         }
 

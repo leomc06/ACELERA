@@ -20,8 +20,12 @@ public class Produto
     public double? PercentualSaude =>
         EstoqueMinimo is null or 0 ? null : Math.Round(QuantidadeAtual / (double)EstoqueMinimo.Value * 100, 0);
 
+    // Zerado e zerado, haja ou nao estoque minimo definido (a planilha do CEAN nao informa o minimo).
+    public bool EstaSemEstoque => QuantidadeAtual == 0;
+
     public CorSaudeEstoque CorSaude =>
-        EstoqueMinimo is null ? CorSaudeEstoque.Verde
+        EstaSemEstoque ? CorSaudeEstoque.Vermelho
+        : EstoqueMinimo is null ? CorSaudeEstoque.Verde
         : QuantidadeAtual <= EstoqueMinimo.Value ? CorSaudeEstoque.Vermelho
         : CorSaudeEstoque.Verde;
 
@@ -29,13 +33,19 @@ public class Produto
 
     public bool EstaCritico => EstoqueMinimo is not null && QuantidadeAtual <= EstoqueMinimo.Value * LimiarCriticoPercentual;
 
-    public bool TemLoteVencido(DateOnly hoje) => Lotes.Any(l => l.EstaVencido(hoje));
+    // Validade so conta para o que ainda esta em estoque: um lote ja zerado nao deixa o produto "vencido".
+    public bool TemLoteVencido(DateOnly hoje) => Lotes.Any(l => l.Quantidade > 0 && l.EstaVencido(hoje));
 
     public bool TemLoteProximoDoVencimento(DateOnly hoje, int diasAlerta) =>
-        Lotes.Any(l => l.EstaProximoDoVencimento(hoje, diasAlerta));
+        Lotes.Any(l => l.Quantidade > 0 && l.EstaProximoDoVencimento(hoje, diasAlerta));
 
-    // Consome quantidade pelas regras FEFO (first-expire, first-out): lotes sem validade
-    // conhecida sao tratados como "vence por ultimo" para nao mascarar lotes com data real.
+    // Regra unica do alerta "validade proxima" (lista, filtro e contadores usam esta): quem ja tem lote vencido
+    // aparece como vencido, e nao tambem como "proximo".
+    public bool TemValidadeProxima(DateOnly hoje, int diasAlerta) =>
+        !TemLoteVencido(hoje) && TemLoteProximoDoVencimento(hoje, diasAlerta);
+
+    // Consome quantidade pelas regras FEFO (first-expire, first-out): o que vence primeiro sai primeiro, e o estoque
+    // sem validade conhecida e tratado como "vence por ultimo" para nao mascarar o que tem data real.
     public IReadOnlyList<LoteConsumido> ConsumirQuantidade(int quantidade)
     {
         if (quantidade > QuantidadeAtual)
@@ -48,21 +58,19 @@ public class Produto
             if (restante <= 0) break;
             var consumidoDoLote = Math.Min(lote.Quantidade, restante);
             if (consumidoDoLote > 0)
-                consumidos.Add(new LoteConsumido(lote.Codigo, lote.DataValidade, consumidoDoLote));
+                consumidos.Add(new LoteConsumido(lote.DataValidade, consumidoDoLote));
             lote.Quantidade -= consumidoDoLote;
             restante -= consumidoDoLote;
         }
 
-        Lotes.RemoveAll(l => l.Quantidade == 0 && l.Codigo is not null);
+        Lotes.RemoveAll(l => l.Quantidade == 0);
         return consumidos;
     }
 
-    // Desfaz uma entrada: retira a quantidade do lote em que ela entrou. Falha se esse estoque ja foi usado.
-    public void RemoverDoLote(string? codigo, DateOnly? dataValidade, int quantidade)
+    // Desfaz uma entrada: retira a quantidade do estoque que tem aquela validade. Falha se esse estoque ja foi usado.
+    public void RemoverDoLote(DateOnly? dataValidade, int quantidade)
     {
-        var lote = Lotes.FirstOrDefault(l =>
-            l.Quantidade >= quantidade &&
-            (codigo is not null ? l.Codigo == codigo : l.Codigo is null && l.DataValidade == dataValidade));
+        var lote = Lotes.FirstOrDefault(l => l.Quantidade >= quantidade && l.DataValidade == dataValidade);
 
         if (lote is null)
             throw new InvalidOperationException(
@@ -72,22 +80,23 @@ public class Produto
         Lotes.RemoveAll(l => l.Quantidade == 0);
     }
 
-    // Desfaz uma saida (ou ajuste para baixo): devolve cada parcela ao lote de onde saiu.
+    // Desfaz uma saida (ou ajuste para baixo): devolve cada parcela ao estoque da validade de onde saiu.
     public void DevolverLotes(IEnumerable<LoteConsumido> lotes)
     {
         foreach (var l in lotes)
-            AdicionarQuantidade(l.Quantidade, l.Codigo, l.DataValidade);
+            AdicionarQuantidade(l.Quantidade, l.DataValidade);
     }
 
-    public void AdicionarQuantidade(int quantidade, string? lote, DateOnly? dataValidade)
+    // Entradas com a mesma validade (ou ambas sem validade) somam no mesmo saldo.
+    public void AdicionarQuantidade(int quantidade, DateOnly? dataValidade)
     {
-        var loteExistente = lote is not null ? Lotes.FirstOrDefault(l => l.Codigo == lote) : null;
-        if (loteExistente is not null)
+        var existente = Lotes.FirstOrDefault(l => l.DataValidade == dataValidade);
+        if (existente is not null)
         {
-            loteExistente.Quantidade += quantidade;
+            existente.Quantidade += quantidade;
             return;
         }
 
-        Lotes.Add(new LoteEstoque { Codigo = lote, DataValidade = dataValidade, Quantidade = quantidade });
+        Lotes.Add(new LoteEstoque { DataValidade = dataValidade, Quantidade = quantidade });
     }
 }

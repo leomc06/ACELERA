@@ -7,12 +7,14 @@ namespace SigaCean.Presentation.Views;
 public partial class CorrigirCancelarMovimentacaoPage : ContentPage
 {
     private readonly MovimentacaoService _movimentacaoService;
+    private readonly AvisoService _avisoService;
     private Movimentacao? _movimentacao;
 
-    public CorrigirCancelarMovimentacaoPage(MovimentacaoService movimentacaoService)
+    public CorrigirCancelarMovimentacaoPage(MovimentacaoService movimentacaoService, AvisoService avisoService)
     {
         InitializeComponent();
         _movimentacaoService = movimentacaoService;
+        _avisoService = avisoService;
     }
 
     public void CarregarMovimentacao(Movimentacao movimentacao)
@@ -25,11 +27,11 @@ public partial class CorrigirCancelarMovimentacaoPage : ContentPage
         DataLabel.Text = item.DataFormatada;
     }
 
-    private void OnCorrigirClicked(object? sender, EventArgs e) => Executar(_movimentacaoService.Corrigir);
+    private void OnCorrigirClicked(object? sender, EventArgs e) => Executar(_movimentacaoService.Corrigir, "corrigida");
 
-    private void OnCancelarClicked(object? sender, EventArgs e) => Executar(_movimentacaoService.Cancelar);
+    private void OnCancelarClicked(object? sender, EventArgs e) => Executar(_movimentacaoService.Cancelar, "cancelada");
 
-    private async void Executar(Action<Guid, string> acao)
+    private async void Executar(Action<Guid, string> acao, string resultado)
     {
         if (_movimentacao is null) return;
 
@@ -52,6 +54,8 @@ public partial class CorrigirCancelarMovimentacaoPage : ContentPage
             return;
         }
 
+        var lembrete = resultado == "corrigida" ? " Agora registre a movimentação certa." : string.Empty;
+        _avisoService.Publicar($"Movimentação {resultado}: {TipoProdutoLabel.Text}. O estoque foi atualizado.{lembrete}");
         await Navigation.PopAsync();
     }
 }

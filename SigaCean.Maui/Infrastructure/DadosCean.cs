@@ -2,7 +2,7 @@
 
 // Dados copiados da planilha real do CEAN (ESTOQUE DE MEDICAMENTOS - 2026 - CEAN.xlsx).
 // Os nomes seguem exatamente a planilha (ja contem apresentacao e especificacao).
-// A planilha nao informa categoria, lote, validade nem estoque minimo, entao esses campos ficam em branco.
+// A planilha nao informa categoria, validade nem estoque minimo, entao esses campos ficam em branco.
 public static class DadosCean
 {
     // Aba "ESTOQUE DE MEDICAMENTOS", coluna "EM ESTOQUE": e o estoque atual, a fonte oficial das quantidades.
@@ -143,6 +143,16 @@ public static class DadosCean
         ("TESTE DE CINOMOSE", 20),
         ("MICROCHIP", 400),
     ];
+
+    // A planilha nao informa categoria: todo item entra como Medicamento, menos estes, que o CEAN pediu para separar.
+    // (Teste de cinomose, pomada e suplementos continuam como Medicamento, por decisao do CEAN.)
+    public static readonly Dictionary<string, Domain.CategoriaProduto> CategoriaDiferenteDeMedicamento = new()
+    {
+        ["MICROCHIP"] = Domain.CategoriaProduto.Microchip,
+        ["PAPINHA DE DESMAME 1KG"] = Domain.CategoriaProduto.Alimentar,
+        ["SHAMPOO, CLOREXIDINA 20 G - FRASCO 500 ML"] = Domain.CategoriaProduto.Higiene,
+        ["SHAMPOO, CETOCONAZOL 0,5 G + CLOREXIDINA 20 G - FRASCO 500 ML"] = Domain.CategoriaProduto.Higiene,
+    };
 
     // Aba "ATIVIDADE", na ordem da planilha. Linhas com data invalida ou quantidade em branco ficaram de fora.
     public static readonly LinhaHistoricoCean[] Historico =

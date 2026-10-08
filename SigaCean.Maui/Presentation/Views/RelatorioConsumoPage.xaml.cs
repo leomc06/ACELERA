@@ -7,14 +7,7 @@ namespace SigaCean.Presentation.Views;
 
 public partial class RelatorioConsumoPage : ContentPage
 {
-    private static readonly (CategoriaProduto? Valor, string Texto)[] Categorias =
-    [
-        (null, "Todas as categorias"),
-        (CategoriaProduto.Medicamento, "Medicamento"),
-        (CategoriaProduto.Insumo, "Insumo"),
-        (CategoriaProduto.Alimentar, "Alimentar"),
-        (CategoriaProduto.EquipamentoHospitalar, "Equipamento hospitalar")
-    ];
+    private static readonly (CategoriaProduto? Valor, string Texto)[] Categorias = Rotulos.CategoriasParaFiltro;
 
     private static readonly (OrdemRelatorio Valor, string Texto)[] Ordens =
     [
@@ -57,14 +50,7 @@ public partial class RelatorioConsumoPage : ContentPage
     private void PreencherUsuarioLogado()
     {
         var usuario = _usuarioService.UsuarioLogado;
-        UsuarioInicialLabel.Text = usuario is null ? "?" : usuario.Nome[..1].ToUpperInvariant();
-        UsuarioNomeLabel.Text = usuario?.Nome ?? string.Empty;
-        UsuarioPerfilLabel.Text = usuario?.Perfil switch
-        {
-            Perfil.Administrativo => "Administrativo",
-            Perfil.Veterinario => "Veterinário",
-            _ => string.Empty
-        };
+        CabecalhoControl.Atualizar(usuario);
     }
 
     // ---- Periodo ----
@@ -167,7 +153,7 @@ public partial class RelatorioConsumoPage : ContentPage
         var termo = PesquisaEntry.Text?.Trim();
         return string.IsNullOrEmpty(termo)
             ? _itensDoPeriodo.ToList()
-            : _itensDoPeriodo.Where(i => i.Produto.Nome.Contains(termo, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            : _itensDoPeriodo.Where(i => BuscaTexto.Contem(i.Produto.Nome, termo)).ToList();
     }
 
     private void AtualizarLista()

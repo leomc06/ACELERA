@@ -9,13 +9,18 @@ Os dados ficam **somente em memória**: ao fechar o programa, tudo volta ao esta
 
 ## Funcionalidades
 
-- Cadastro de produtos e consulta do estoque, com busca por nome e filtros por categoria e situação
-  (crítico, abaixo do mínimo, validade próxima, vencido)
-- Registro de entradas (com documento: nota fiscal ou pedido) e de saídas (com destino e quem retirou)
+- Cadastro de produtos e consulta do estoque, com busca por nome (ignora maiúsculas e acentos) e filtros por
+  categoria e situação (sem estoque, crítico, abaixo do mínimo, validade próxima, vencido)
+- Categorias: Medicamento, Insumo, Alimentar, Equipamento hospitalar, Higiene e Microchip
+- Registro de entradas (com documento: nota fiscal ou pedido, e validade opcional) e de saídas (com destino e
+  quem retirou); a saída usa primeiro o que vence antes
 - Ajuste de balanço
-- Histórico de movimentações, com busca por produto, retirante, destino ou documento
+- Corrigir ou cancelar uma movimentação (só o perfil Administrativo, com motivo), desfazendo o efeito no estoque
+- Histórico de movimentações, com busca por produto, retirante, destino ou documento e filtros por tipo,
+  situação e período
 - Relatório de Consumo mensal, trimestral, anual ou por período, com exportação em PDF
-- Controle de acesso por usuário
+- Confirmação antes de gravar e faixa de aviso depois de cada operação
+- Controle de acesso por usuário, com botão Sair para trocar de usuário
 
 ## Requisitos
 
@@ -63,6 +68,15 @@ Usuários fictícios, criados só para demonstração:
 ```bash
 dotnet test SigaCean.Tests
 ```
+
+São 157 testes das regras de estoque, validade, estoque mínimo, movimentações (inclusive correção e
+cancelamento), busca, histórico, relatório, PDF e login.
+
+## Dados de exemplo
+
+Os 134 produtos e as quantidades vêm da planilha real do CEAN. A planilha não informa estoque mínimo nem validade,
+então os alertas de mínimo só aparecem depois que o mínimo de um produto é cadastrado. Produto com quantidade zero
+aparece como "SEM ESTOQUE". Os dados ficam só em memória e voltam ao estado inicial ao fechar o programa.
 
 ## Estrutura
 

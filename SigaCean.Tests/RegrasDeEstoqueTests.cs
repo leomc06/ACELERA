@@ -32,19 +32,19 @@ public class RegrasDeEstoqueTests
     {
         var p = NovoProduto();
 
-        _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Doacao, null, "Doador", "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Doacao, null, "Doador", null, null);
 
         Assert.Equal(20, p.QuantidadeAtual);
         Assert.Single(_dataStore.Movimentacoes.OfType<EntradaEstoque>(), m => m.Produto == p);
     }
 
     [Fact]
-    public void Entrada_NoMesmoLote_SomaNoLoteExistente()
+    public void Entrada_ComAMesmaValidade_SomaNoMesmoSaldo()
     {
         var p = NovoProduto();
 
-        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, "AF1", null, "L1", null, null);
-        _movimentacoes.RegistrarEntrada(p, 7, TipoOrigemEntrada.Compra, "AF1", null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, "AF1", null, null, null);
+        _movimentacoes.RegistrarEntrada(p, 7, TipoOrigemEntrada.Compra, "AF1", null, null, null);
 
         Assert.Single(p.Lotes);
         Assert.Equal(12, p.QuantidadeAtual);
@@ -54,7 +54,7 @@ public class RegrasDeEstoqueTests
     public void Saida_ReduzEstoque_ERegistraDestino()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Compra, null, null, null, null);
 
         var saida = _movimentacoes.RegistrarSaida(p, 8, "Canil", null);
 
@@ -66,7 +66,7 @@ public class RegrasDeEstoqueTests
     public void Saida_MaiorQueDisponivel_Falha_ENaoAlteraEstoqueNemHistorico()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, null, null);
         var movimentacoesAntes = _dataStore.Movimentacoes.Count;
 
         Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, 6, "Canil", null));
@@ -79,7 +79,7 @@ public class RegrasDeEstoqueTests
     public void Saida_ExatamenteTodoEstoque_ZeraSemErro()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, null, null);
 
         _movimentacoes.RegistrarSaida(p, 5, "Canil", null);
 
@@ -92,39 +92,39 @@ public class RegrasDeEstoqueTests
     public void Saida_ConsomePrimeiroOLoteQueVenceMaisCedo()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "TARDE", Hoje.AddDays(90), null);
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "CEDO", Hoje.AddDays(10), null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(90), null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(10), null);
 
         _movimentacoes.RegistrarSaida(p, 6, "Canil", null);
 
-        Assert.Equal(4, p.Lotes.Single(l => l.Codigo == "CEDO").Quantidade);
-        Assert.Equal(10, p.Lotes.Single(l => l.Codigo == "TARDE").Quantidade);
+        Assert.Equal(4, p.Lotes.Single(l => l.DataValidade == Hoje.AddDays(10)).Quantidade);
+        Assert.Equal(10, p.Lotes.Single(l => l.DataValidade == Hoje.AddDays(90)).Quantidade);
     }
 
     [Fact]
     public void Saida_AtravessaLotes_QuandoPrimeiroNaoBasta()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 4, TipoOrigemEntrada.Compra, null, null, "CEDO", Hoje.AddDays(10), null);
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "TARDE", Hoje.AddDays(90), null);
+        _movimentacoes.RegistrarEntrada(p, 4, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(10), null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(90), null);
 
         _movimentacoes.RegistrarSaida(p, 7, "Canil", null);
 
-        Assert.DoesNotContain(p.Lotes, l => l.Codigo == "CEDO");
-        Assert.Equal(7, p.Lotes.Single(l => l.Codigo == "TARDE").Quantidade);
+        Assert.DoesNotContain(p.Lotes, l => l.DataValidade == Hoje.AddDays(10));
+        Assert.Equal(7, p.Lotes.Single(l => l.DataValidade == Hoje.AddDays(90)).Quantidade);
     }
 
     [Fact]
     public void Saida_LoteSemValidade_EConsumidoPorUltimo()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "SEMVAL", null, null);
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "COMVAL", Hoje.AddDays(30), null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(30), null);
 
         _movimentacoes.RegistrarSaida(p, 10, "Canil", null);
 
-        Assert.DoesNotContain(p.Lotes, l => l.Codigo == "COMVAL");
-        Assert.Equal(10, p.Lotes.Single(l => l.Codigo == "SEMVAL").Quantidade);
+        Assert.DoesNotContain(p.Lotes, l => l.DataValidade == Hoje.AddDays(30));
+        Assert.Equal(10, p.Lotes.Single(l => l.DataValidade == null).Quantidade);
     }
 
     // ---- Ajuste de balanço (RD0023) ----
@@ -133,7 +133,7 @@ public class RegrasDeEstoqueTests
     public void Ajuste_ParaMais_AcrescentaDiferenca()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
         var ajuste = _movimentacoes.RegistrarAjusteBalanco(p, 15, null);
 
@@ -147,7 +147,7 @@ public class RegrasDeEstoqueTests
     public void Ajuste_ParaMenos_ReduzDiferenca()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
         var ajuste = _movimentacoes.RegistrarAjusteBalanco(p, 3, null);
 
@@ -159,7 +159,7 @@ public class RegrasDeEstoqueTests
     public void Ajuste_ParaMesmoValor_NaoAlteraEstoque_MasRegistraMovimentacao()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
         var ajuste = _movimentacoes.RegistrarAjusteBalanco(p, 10, null);
 
@@ -173,7 +173,7 @@ public class RegrasDeEstoqueTests
     public void Corrigir_MarcaStatusEMotivo()
     {
         var p = NovoProduto();
-        var entrada = _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        var entrada = _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
         _movimentacoes.Corrigir(entrada.Id, "Quantidade digitada errada");
 
@@ -185,7 +185,7 @@ public class RegrasDeEstoqueTests
     public void Cancelar_MarcaStatusEMotivo()
     {
         var p = NovoProduto();
-        var entrada = _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        var entrada = _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
         _movimentacoes.Cancelar(entrada.Id, "Lançamento duplicado");
 
@@ -197,7 +197,7 @@ public class RegrasDeEstoqueTests
     public void MovimentacaoNova_ComecaAtiva()
     {
         var p = NovoProduto();
-        var entrada = _movimentacoes.RegistrarEntrada(p, 1, TipoOrigemEntrada.Compra, null, null, null, null, null);
+        var entrada = _movimentacoes.RegistrarEntrada(p, 1, TipoOrigemEntrada.Compra, null, null, null, null);
 
         Assert.Equal(StatusMovimentacao.Ativa, entrada.Status);
     }
@@ -212,7 +212,7 @@ public class RegrasDeEstoqueTests
     public void Saude_VermelhaQuandoAtingeOuFicaAbaixoDoMinimo(int quantidade, CorSaudeEstoque esperada)
     {
         var p = NovoProduto(minimo: 10);
-        if (quantidade > 0) p.AdicionarQuantidade(quantidade, "L1", null);
+        if (quantidade > 0) p.AdicionarQuantidade(quantidade, null);
 
         Assert.Equal(esperada, p.CorSaude);
     }
@@ -221,7 +221,7 @@ public class RegrasDeEstoqueTests
     public void Saude_SemEstoqueMinimo_EVerde_ESemPercentual()
     {
         var p = NovoProduto(minimo: null);
-        p.AdicionarQuantidade(1, "L1", null);
+        p.AdicionarQuantidade(1, null);
 
         Assert.Equal(CorSaudeEstoque.Verde, p.CorSaude);
         Assert.Null(p.PercentualSaude);
@@ -233,7 +233,7 @@ public class RegrasDeEstoqueTests
     public void Saude_PercentualEmRelacaoAoMinimo()
     {
         var p = NovoProduto(minimo: 50);
-        p.AdicionarQuantidade(63, "L1", null);
+        p.AdicionarQuantidade(63, null);
 
         Assert.Equal(126, p.PercentualSaude);
     }
@@ -245,7 +245,7 @@ public class RegrasDeEstoqueTests
     public void Critico_QuandoEstaMuitoAbaixoDoMinimo(int quantidade, bool critico)
     {
         var p = NovoProduto(minimo: 10);
-        if (quantidade > 0) p.AdicionarQuantidade(quantidade, "L1", null);
+        if (quantidade > 0) p.AdicionarQuantidade(quantidade, null);
 
         Assert.Equal(critico, p.EstaCritico);
     }
@@ -256,7 +256,7 @@ public class RegrasDeEstoqueTests
     public void Validade_ProximaDoVencimento_DentroDaJanela()
     {
         var p = NovoProduto();
-        p.AdicionarQuantidade(5, "L1", Hoje.AddDays(30));
+        p.AdicionarQuantidade(5, Hoje.AddDays(30));
 
         Assert.Contains(p, _estoque.ObterProximosDoVencimento(Hoje));
         Assert.DoesNotContain(p, _estoque.ObterVencidos(Hoje));
@@ -266,7 +266,7 @@ public class RegrasDeEstoqueTests
     public void Validade_ForaDaJanela_NaoAlerta()
     {
         var p = NovoProduto();
-        p.AdicionarQuantidade(5, "L1", Hoje.AddDays(31));
+        p.AdicionarQuantidade(5, Hoje.AddDays(31));
 
         Assert.DoesNotContain(p, _estoque.ObterProximosDoVencimento(Hoje));
     }
@@ -275,7 +275,7 @@ public class RegrasDeEstoqueTests
     public void Validade_Vencido_EClassificadoComoVencido_ENaoComoProximo()
     {
         var p = NovoProduto();
-        p.AdicionarQuantidade(5, "L1", Hoje.AddDays(-1));
+        p.AdicionarQuantidade(5, Hoje.AddDays(-1));
 
         Assert.Contains(p, _estoque.ObterVencidos(Hoje));
         Assert.DoesNotContain(p, _estoque.ObterProximosDoVencimento(Hoje));
@@ -284,7 +284,7 @@ public class RegrasDeEstoqueTests
     [Fact]
     public void Validade_VenceHoje_AindaNaoEstaVencido()
     {
-        var lote = new LoteEstoque { Codigo = "L1", DataValidade = Hoje, Quantidade = 1 };
+        var lote = new LoteEstoque { DataValidade = Hoje, Quantidade = 1 };
 
         Assert.False(lote.EstaVencido(Hoje));
         Assert.True(lote.EstaProximoDoVencimento(Hoje, 30));
@@ -293,7 +293,7 @@ public class RegrasDeEstoqueTests
     [Fact]
     public void Validade_LoteSemData_NuncaAlerta()
     {
-        var lote = new LoteEstoque { Codigo = "L1", DataValidade = null, Quantidade = 1 };
+        var lote = new LoteEstoque { DataValidade = null, Quantidade = 1 };
 
         Assert.False(lote.EstaVencido(Hoje));
         Assert.False(lote.EstaProximoDoVencimento(Hoje, 30));
@@ -358,8 +358,8 @@ public class RegrasDeEstoqueTests
     {
         var a = NovoProduto("A");
         var b = NovoProduto("B");
-        _movimentacoes.RegistrarEntrada(a, 5, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
-        _movimentacoes.RegistrarEntrada(b, 5, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(a, 5, TipoOrigemEntrada.Compra, null, null, null, null);
+        _movimentacoes.RegistrarEntrada(b, 5, TipoOrigemEntrada.Compra, null, null, null, null);
         _movimentacoes.RegistrarSaida(a, 1, "Canil", null);
 
         var todos = _movimentacoes.ObterHistorico();
@@ -375,7 +375,7 @@ public class RegrasDeEstoqueTests
     public void Historico_FiltraPorPeriodo()
     {
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, null, null);
 
         Assert.Single(_movimentacoes.ObterHistorico(dataInicio: DateTime.Now.AddMinutes(-1), dataFim: DateTime.Now.AddMinutes(1)));
         Assert.Empty(_movimentacoes.ObterHistorico(dataInicio: DateTime.Now.AddDays(1)));
@@ -390,11 +390,11 @@ public class RegrasDeEstoqueTests
         var relatorio = new RelatorioService(_dataStore);
         var a = NovoProduto("A");
         var b = NovoProduto("B");
-        _movimentacoes.RegistrarEntrada(a, 20, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(a, 20, TipoOrigemEntrada.Compra, null, null, null, null);
         _movimentacoes.RegistrarSaida(a, 5, "Canil", null);
         _movimentacoes.RegistrarSaida(a, 3, "Gatil", null);
         _movimentacoes.RegistrarAjusteBalanco(a, 10, null); // 12 -> 10 = -2
-        _movimentacoes.RegistrarEntrada(b, 4, TipoOrigemEntrada.Doacao, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(b, 4, TipoOrigemEntrada.Doacao, null, null, null, null);
 
         var itens = relatorio.GerarRelatorioConsumo(DateTime.Now.AddDays(-1), DateTime.Now.AddDays(1));
 
@@ -410,7 +410,7 @@ public class RegrasDeEstoqueTests
     {
         var relatorio = new RelatorioService(_dataStore);
         var p = NovoProduto();
-        _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Compra, null, null, "L1", null, null);
+        _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Compra, null, null, null, null);
 
         Assert.Empty(relatorio.GerarRelatorioConsumo(DateTime.Now.AddDays(-30), DateTime.Now.AddDays(-10)));
     }
@@ -469,7 +469,6 @@ public class RegrasDeEstoqueTests
         Assert.Equal(134, inicial.Produtos.Count);
         Assert.Equal(134, inicial.Produtos.Select(p => p.Nome).Distinct().Count());
         Assert.Equal(4878, inicial.Produtos.Sum(p => p.QuantidadeAtual));
-        Assert.All(inicial.Produtos, p => Assert.Equal(CategoriaProduto.Medicamento, p.Categoria));
         Assert.Equal(2, inicial.Usuarios.Count);
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="SigaCean.Presentation.Views.AvisoBanner"
+        IsVisible="False"
+        Padding="14,10"
+        BackgroundColor="#E3F4EC"
+        Stroke="{StaticResource Green}">
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+        <Label x:Name="MensagemLabel" Grid.Column="0" TextColor="{StaticResource Ink}" FontAttributes="Bold" VerticalOptions="Center" />
+        <Button Grid.Column="1" Text="✕" Clicked="OnFecharClicked" BackgroundColor="Transparent" BorderWidth="0"
+                TextColor="{StaticResource Muted}" Padding="8,0" MinimumHeightRequest="28" MinimumWidthRequest="28" />
+    </Grid>
+</Border>

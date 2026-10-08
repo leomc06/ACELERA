@@ -9,11 +9,13 @@ public class ProdutoService(DataStore dataStore)
 
     public Produto Cadastrar(string nome, CategoriaProduto categoria, string? apresentacaoEspecificacao, int? estoqueMinimo)
     {
+        ValidarDados(nome, estoqueMinimo);
+
         var produto = new Produto
         {
-            Nome = nome,
+            Nome = nome.Trim(),
             Categoria = categoria,
-            ApresentacaoEspecificacao = apresentacaoEspecificacao,
+            ApresentacaoEspecificacao = LimparTexto(apresentacaoEspecificacao),
             EstoqueMinimo = estoqueMinimo
         };
         dataStore.Produtos.Add(produto);
@@ -22,12 +24,24 @@ public class ProdutoService(DataStore dataStore)
 
     public void Alterar(Guid produtoId, string nome, CategoriaProduto categoria, string? apresentacaoEspecificacao, int? estoqueMinimo)
     {
+        ValidarDados(nome, estoqueMinimo);
+
         var produto = ObterPorId(produtoId);
-        produto.Nome = nome;
+        produto.Nome = nome.Trim();
         produto.Categoria = categoria;
-        produto.ApresentacaoEspecificacao = apresentacaoEspecificacao;
+        produto.ApresentacaoEspecificacao = LimparTexto(apresentacaoEspecificacao);
         produto.EstoqueMinimo = estoqueMinimo;
     }
+
+    private static void ValidarDados(string nome, int? estoqueMinimo)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new InvalidOperationException("Informe o nome do produto.");
+        if (estoqueMinimo < 0)
+            throw new InvalidOperationException("O estoque mínimo não pode ser negativo.");
+    }
+
+    private static string? LimparTexto(string? texto) => string.IsNullOrWhiteSpace(texto) ? null : texto.Trim();
 
     public Produto ObterPorId(Guid produtoId) =>
         dataStore.Produtos.First(p => p.Id == produtoId);
@@ -48,7 +62,7 @@ public class ProdutoService(DataStore dataStore)
     public IReadOnlyList<Produto> Pesquisar(string? nome, CategoriaProduto? categoria) =>
         dataStore.Produtos.Where(p =>
                 p.Ativo &&
-                (string.IsNullOrWhiteSpace(nome) || p.Nome.Contains(nome, StringComparison.OrdinalIgnoreCase)) &&
+                BuscaTexto.Contem(p.Nome, nome) &&
                 (categoria is null || p.Categoria == categoria))
             .ToList();
 }

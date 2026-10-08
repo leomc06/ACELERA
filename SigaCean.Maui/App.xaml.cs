@@ -16,7 +16,12 @@ public partial class App : Application
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
 		var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
-		var window = new Window(new NavigationPage(loginPage));
+		var window = new Window(new NavigationPage(loginPage))
+		{
+			// Abaixo disso o menu lateral fixo deixa pouco espaco e os formularios de duas colunas ficam apertados.
+			MinimumWidth = 900,
+			MinimumHeight = 600
+		};
 
 		// Barra de titulo nativa na mesma cor da marca (teal do protótipo web).
 		window.TitleBar = new TitleBar

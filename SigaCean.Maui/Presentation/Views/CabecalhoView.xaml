@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      x:Class="SigaCean.Presentation.Views.CabecalhoView"
+      ColumnDefinitions="*,Auto">
+    <Label Grid.Column="0" Text="CEAN • CENTRO DE APOIO AOS ANIMAIS" Style="{StaticResource EyebrowLabel}" VerticalOptions="Center" />
+    <HorizontalStackLayout Grid.Column="1" Spacing="9" VerticalOptions="Center">
+        <Border StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Padding="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
+            <Label x:Name="UsuarioInicialLabel" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+        </Border>
+        <VerticalStackLayout Spacing="0">
+            <Label x:Name="UsuarioNomeLabel" FontSize="12" />
+            <Label x:Name="UsuarioPerfilLabel" Style="{StaticResource MutedLabel}" FontSize="10" />
+        </VerticalStackLayout>
+    </HorizontalStackLayout>
+</Grid>

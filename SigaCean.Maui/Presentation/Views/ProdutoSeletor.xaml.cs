@@ -1,4 +1,5 @@
 using SigaCean.Domain;
+using SigaCean.Services;
 
 namespace SigaCean.Presentation.Views;
 
@@ -61,7 +62,7 @@ public partial class ProdutoSeletor : ContentView
         var termoLimpo = termo?.Trim();
         var encontrados = string.IsNullOrEmpty(termoLimpo)
             ? _todos
-            : _todos.Where(p => p.Nome.Contains(termoLimpo, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            : _todos.Where(p => BuscaTexto.Contem(p.Nome, termoLimpo)).ToList();
 
         ListaLayout.Children.Clear();
         foreach (var produto in encontrados.Take(MaximoNaLista))

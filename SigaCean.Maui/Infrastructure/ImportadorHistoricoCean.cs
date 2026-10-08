@@ -52,7 +52,7 @@ public static class ImportadorHistoricoCean
                     QuantidadeApurada = saldo + diferenca,
                     Data = data
                 };
-                if (diferenca < 0) ajuste.LotesConsumidos.Add(new LoteConsumido(null, null, -diferenca));
+                if (diferenca < 0) ajuste.LotesConsumidos.Add(new LoteConsumido(null, -diferenca));
                 movimentacao = ajuste;
                 saldo += diferenca;
             }
@@ -70,7 +70,7 @@ public static class ImportadorHistoricoCean
                     Destino = observacao.Length > 0 ? observacao : "Não informado",
                     Data = data
                 };
-                saida.LotesConsumidos.Add(new LoteConsumido(null, null, linha.Quantidade));
+                saida.LotesConsumidos.Add(new LoteConsumido(null, linha.Quantidade));
                 movimentacao = saida;
                 saldo -= linha.Quantidade;
             }

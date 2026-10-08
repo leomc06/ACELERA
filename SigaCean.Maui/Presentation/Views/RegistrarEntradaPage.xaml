@@ -19,7 +19,7 @@
                 <VerticalStackLayout Spacing="16">
                     <Label Text="Dados da entrada" Style="{StaticResource CardTitle}" />
 
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="15" RowSpacing="15">
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="15" RowSpacing="15">
 
                         <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
                             <HorizontalStackLayout Spacing="2">
@@ -60,12 +60,7 @@
                             <Entry x:Name="DocumentoEntry" Placeholder="Nº da nota fiscal ou do pedido (opcional)" />
                         </VerticalStackLayout>
 
-                        <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="6">
-                            <Label Text="Lote" Style="{StaticResource FieldLabel}" />
-                            <Entry x:Name="LoteEntry" Placeholder="Código do lote (opcional)" />
-                        </VerticalStackLayout>
-
-                        <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
+                        <VerticalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
                             <HorizontalStackLayout Spacing="8">
                                 <Switch x:Name="PossuiValidadeSwitch" Toggled="OnPossuiValidadeToggled" />
                                 <Label Text="Possui data de validade" VerticalOptions="Center" />

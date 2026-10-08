@@ -2,24 +2,14 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SigaCean.Presentation.ViewModels"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
              x:Class="SigaCean.Presentation.Views.RelatorioConsumoPage"
              Title="Relatório de Consumo">
 
     <ScrollView>
         <VerticalStackLayout Padding="28" Spacing="18">
 
-            <Grid ColumnDefinitions="*,Auto">
-                <Label Grid.Column="0" Text="CEAN • CENTRO DE APOIO AOS ANIMAIS" Style="{StaticResource EyebrowLabel}" VerticalOptions="Center" />
-                <HorizontalStackLayout Grid.Column="1" Spacing="9" VerticalOptions="Center">
-                    <Border StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Padding="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
-                        <Label x:Name="UsuarioInicialLabel" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                    </Border>
-                    <VerticalStackLayout Spacing="0">
-                        <Label x:Name="UsuarioNomeLabel" FontSize="12" />
-                        <Label x:Name="UsuarioPerfilLabel" Style="{StaticResource MutedLabel}" FontSize="10" />
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-            </Grid>
+            <views:CabecalhoView x:Name="CabecalhoControl" />
 
             <VerticalStackLayout Spacing="4">
                 <Label Text="Relatório de Consumo" Style="{StaticResource PageTitle}" />

@@ -7,18 +7,12 @@ namespace SigaCean.Presentation.Views;
 
 public partial class EstoquePage : ContentPage
 {
-	private static readonly (CategoriaProduto? Valor, string Texto)[] Categorias =
-	[
-		(null, "Todas as categorias"),
-		(CategoriaProduto.Medicamento, "Medicamento"),
-		(CategoriaProduto.Insumo, "Insumo"),
-		(CategoriaProduto.Alimentar, "Alimentar"),
-		(CategoriaProduto.EquipamentoHospitalar, "Equipamento hospitalar")
-	];
+	private static readonly (CategoriaProduto? Valor, string Texto)[] Categorias = Rotulos.CategoriasParaFiltro;
 
 	private static readonly (SituacaoEstoque Valor, string Texto)[] Situacoes =
 	[
 		(SituacaoEstoque.Todos, "Todas as situações"),
+		(SituacaoEstoque.SemEstoque, "Sem estoque"),
 		(SituacaoEstoque.Critico, "Estoque crítico"),
 		(SituacaoEstoque.AbaixoDoMinimo, "Abaixo do mínimo"),
 		(SituacaoEstoque.ValidadeProxima, "Validade próxima"),
@@ -28,14 +22,16 @@ public partial class EstoquePage : ContentPage
 	private readonly EstoqueService _estoqueService;
 	private readonly UsuarioService _usuarioService;
 	private readonly IServiceProvider _serviceProvider;
+	private readonly AvisoService _avisoService;
 	private bool _carregandoFiltros;
 
-	public EstoquePage(EstoqueService estoqueService, UsuarioService usuarioService, IServiceProvider serviceProvider)
+	public EstoquePage(EstoqueService estoqueService, UsuarioService usuarioService, IServiceProvider serviceProvider, AvisoService avisoService)
 	{
 		InitializeComponent();
 		_estoqueService = estoqueService;
 		_usuarioService = usuarioService;
 		_serviceProvider = serviceProvider;
+		_avisoService = avisoService;
 
 		_carregandoFiltros = true;
 		CategoriaFiltroPicker.ItemsSource = Categorias.Select(c => c.Texto).ToList();
@@ -49,20 +45,14 @@ public partial class EstoquePage : ContentPage
 		AtualizarOpcoesDeSituacao();
 		CarregarProdutos();
 		PreencherUsuarioLogado();
+		AvisoBannerControl.Mostrar(_avisoService.Consumir());
 	}
 
 	private void PreencherUsuarioLogado()
 	{
 		var usuario = _usuarioService.UsuarioLogado;
 		AcoesAdministrativoLayout.IsVisible = usuario?.Perfil == Perfil.Administrativo;
-		UsuarioInicialLabel.Text = usuario is null ? "?" : usuario.Nome[..1].ToUpperInvariant();
-		UsuarioNomeLabel.Text = usuario?.Nome ?? string.Empty;
-		UsuarioPerfilLabel.Text = usuario?.Perfil switch
-		{
-			Perfil.Administrativo => "Administrativo",
-			Perfil.Veterinario => "Veterinário",
-			_ => string.Empty
-		};
+		CabecalhoControl.Atualizar(usuario);
 	}
 
 	// Mostra quantos produtos ha em cada situacao de alerta; a selecao atual e mantida.

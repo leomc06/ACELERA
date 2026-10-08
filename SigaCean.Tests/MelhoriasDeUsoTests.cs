@@ -34,7 +34,7 @@ public class MelhoriasDeUsoTests
     public void Saida_GuardaQuemRetirou()
     {
         var p = Novo("Dipirona");
-        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null, null);
+        _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
         var saida = _movimentacoes.RegistrarSaida(p, 3, "Canil", null, "Maria");
 
@@ -47,7 +47,7 @@ public class MelhoriasDeUsoTests
     {
         var p = Novo("Dipirona");
 
-        var entrada = _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Concessao, null, "Secretaria de Saúde", null, null, null, "NF 1234");
+        var entrada = _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Concessao, null, "Secretaria de Saúde", null, null, "NF 1234");
 
         Assert.Equal("NF 1234", entrada.Documento);
     }
@@ -70,13 +70,13 @@ public class MelhoriasDeUsoTests
     public void Filtrar_PorSituacao_CriticoVencidoEValidadeProxima()
     {
         var critico = Novo("Critico", minimo: 100);
-        _movimentacoes.RegistrarEntrada(critico, 10, TipoOrigemEntrada.Compra, null, null, "A", Hoje.AddDays(400), null);
+        _movimentacoes.RegistrarEntrada(critico, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(400), null);
 
         var vencido = Novo("Vencido");
-        _movimentacoes.RegistrarEntrada(vencido, 10, TipoOrigemEntrada.Compra, null, null, "B", Hoje.AddDays(-1), null);
+        _movimentacoes.RegistrarEntrada(vencido, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(-1), null);
 
         var proximo = Novo("Proximo");
-        _movimentacoes.RegistrarEntrada(proximo, 10, TipoOrigemEntrada.Compra, null, null, "C", Hoje.AddDays(10), null);
+        _movimentacoes.RegistrarEntrada(proximo, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(10), null);
 
         Assert.Equal(["Critico"], _estoque.Filtrar(null, null, SituacaoEstoque.Critico).Select(p => p.Nome));
         Assert.Equal(["Vencido"], _estoque.Filtrar(null, null, SituacaoEstoque.Vencido).Select(p => p.Nome));
@@ -137,7 +137,7 @@ public class MelhoriasDeUsoTests
         var b = Novo("B remédio", CategoriaProduto.Medicamento);
         var c = Novo("C ração", CategoriaProduto.Alimentar);
         foreach (var p in new[] { a, b, c })
-            _movimentacoes.RegistrarEntrada(p, 100, TipoOrigemEntrada.Compra, null, null, null, null, null);
+            _movimentacoes.RegistrarEntrada(p, 100, TipoOrigemEntrada.Compra, null, null, null, null);
         SaidaEm(a, 5, DateTime.Today);
         SaidaEm(b, 30, DateTime.Today);
         SaidaEm(c, 50, DateTime.Today);
@@ -152,7 +152,7 @@ public class MelhoriasDeUsoTests
     public void Relatorio_TrazEstoqueAtual_EMediaMensal()
     {
         var p = Novo("Produto");
-        _movimentacoes.RegistrarEntrada(p, 100, TipoOrigemEntrada.Compra, null, null, null, null, null);
+        _movimentacoes.RegistrarEntrada(p, 100, TipoOrigemEntrada.Compra, null, null, null, null);
         // 100 saidas num periodo de 4 meses (jan a abr) => media de ~25 por mes
         SaidaEm(p, 100, new DateTime(2026, 2, 10));
         var inicio = new DateTime(2026, 1, 1);

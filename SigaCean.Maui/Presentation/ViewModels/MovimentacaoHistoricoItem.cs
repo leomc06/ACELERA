@@ -70,7 +70,6 @@ public class MovimentacaoHistoricoItem
         if (!string.IsNullOrWhiteSpace(e.NumeroAF)) partes.Add($"AF {e.NumeroAF}");
         if (!string.IsNullOrWhiteSpace(e.Documento)) partes.Add($"doc. {e.Documento}");
         if (!string.IsNullOrWhiteSpace(e.DetalheOrigem)) partes.Add(e.DetalheOrigem);
-        if (!string.IsNullOrWhiteSpace(e.Lote)) partes.Add($"lote {e.Lote}");
         if (e.DataValidade is not null) partes.Add($"val. {e.DataValidade:dd/MM/yyyy}");
 
         return string.Join(" · ", partes);

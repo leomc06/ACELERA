@@ -1,10 +1,9 @@
 namespace SigaCean.Domain;
 
-// O CEAN nao controla lote hoje, mas o time decidiu implementar: cada entrada pode abrir um lote
-// proprio com sua propria validade, ja que produtos diferentes do mesmo medicamento podem vencer em datas diferentes.
+// Saldo de um produto que tem a mesma data de validade. Nao e "lote" de fornecedor: o CEAN nao controla lote
+// e o sistema nao guarda codigo de lote. Existe so para saber o que vence primeiro (FEFO) e o que ja venceu.
 public class LoteEstoque
 {
-    public string? Codigo { get; set; }
     public DateOnly? DataValidade { get; set; }
     public int Quantidade { get; set; }
 

@@ -5,5 +5,3 @@ obj/
 *.user
 *.suo
 
-# Projeto WPF antigo (abandonado; o sistema usa .NET MAUI), fora da solution
-/SigaCean/

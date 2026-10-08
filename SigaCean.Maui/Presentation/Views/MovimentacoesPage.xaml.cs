@@ -11,13 +11,42 @@ public partial class MovimentacoesPage : ContentPage
     private readonly UsuarioService _usuarioService;
     private readonly IServiceProvider _serviceProvider;
     private List<MovimentacaoHistoricoItem> _todosOsItens = new();
+    private bool _carregandoFiltros;
 
-    public MovimentacoesPage(MovimentacaoService movimentacaoService, UsuarioService usuarioService, IServiceProvider serviceProvider)
+    private static readonly (TipoMovimentacao? Valor, string Texto)[] Tipos =
+    [
+        (null, "Todos os tipos"),
+        (TipoMovimentacao.Entrada, "Entradas"),
+        (TipoMovimentacao.Saida, "Saídas"),
+        (TipoMovimentacao.Ajuste, "Ajustes de balanço")
+    ];
+
+    private static readonly (StatusMovimentacao? Valor, string Texto)[] Situacoes =
+    [
+        (null, "Todas as situações"),
+        (StatusMovimentacao.Ativa, "Ativas"),
+        (StatusMovimentacao.Corrigida, "Corrigidas"),
+        (StatusMovimentacao.Cancelada, "Canceladas")
+    ];
+
+    private readonly AvisoService _avisoService;
+
+    public MovimentacoesPage(MovimentacaoService movimentacaoService, UsuarioService usuarioService, IServiceProvider serviceProvider, AvisoService avisoService)
     {
         InitializeComponent();
         _movimentacaoService = movimentacaoService;
         _usuarioService = usuarioService;
         _serviceProvider = serviceProvider;
+        _avisoService = avisoService;
+
+        _carregandoFiltros = true;
+        TipoFiltroPicker.ItemsSource = Tipos.Select(t => t.Texto).ToList();
+        TipoFiltroPicker.SelectedIndex = 0;
+        StatusFiltroPicker.ItemsSource = Situacoes.Select(s => s.Texto).ToList();
+        StatusFiltroPicker.SelectedIndex = 0;
+        DataInicioPicker.Date = DateTime.Today.AddDays(-30);
+        DataFimPicker.Date = DateTime.Today;
+        _carregandoFiltros = false;
     }
 
     protected override void OnAppearing()
@@ -25,39 +54,82 @@ public partial class MovimentacoesPage : ContentPage
         base.OnAppearing();
         CarregarHistorico();
         PreencherUsuarioLogado();
+        AvisoBannerControl.Mostrar(_avisoService.Consumir());
     }
 
     private void PreencherUsuarioLogado()
     {
         var usuario = _usuarioService.UsuarioLogado;
         AcoesAdministrativoLayout.IsVisible = usuario?.Perfil == Perfil.Administrativo;
-        UsuarioInicialLabel.Text = usuario is null ? "?" : usuario.Nome[..1].ToUpperInvariant();
-        UsuarioNomeLabel.Text = usuario?.Nome ?? string.Empty;
-        UsuarioPerfilLabel.Text = usuario?.Perfil switch
-        {
-            Perfil.Administrativo => "Administrativo",
-            Perfil.Veterinario => "Veterinário",
-            _ => string.Empty
-        };
+        CabecalhoControl.Atualizar(usuario);
     }
 
     private void CarregarHistorico()
     {
-        _todosOsItens = _movimentacaoService.ObterHistorico()
+        DateTime? inicio = null, fim = null;
+        if (FiltrarPeriodoSwitch.IsToggled)
+        {
+            var de = (DataInicioPicker.Date ?? DateTime.Today).Date;
+            var ate = (DataFimPicker.Date ?? DateTime.Today).Date;
+            if (de > ate)
+            {
+                MostrarMensagem("A data inicial não pode ser depois da data final.");
+                return; // mantem a lista anterior ate o usuario corrigir as datas
+            }
+            (inicio, fim) = (de, ate.AddDays(1).AddTicks(-1)); // inclui o dia final por inteiro
+        }
+        MostrarMensagem(null);
+
+        var tipo = Tipos[Math.Max(TipoFiltroPicker.SelectedIndex, 0)].Valor;
+        var status = Situacoes[Math.Max(StatusFiltroPicker.SelectedIndex, 0)].Valor;
+
+        _todosOsItens = _movimentacaoService.ObterHistorico(null, inicio, fim, tipo, status)
             .Select(m => new MovimentacaoHistoricoItem { Movimentacao = m })
             .ToList();
 
-        MovimentacoesCollectionView.ItemsSource = _todosOsItens;
+        AplicarPesquisa();
     }
 
-    private void OnPesquisaTextChanged(object? sender, TextChangedEventArgs e)
+    private void OnPesquisaTextChanged(object? sender, TextChangedEventArgs e) => AplicarPesquisa();
+
+    // Usa o texto que esta no campo, tambem ao recarregar a lista (ao voltar de outra tela), para os dois nao divergirem.
+    private void AplicarPesquisa()
     {
-        var termo = e.NewTextValue;
-        MovimentacoesCollectionView.ItemsSource = string.IsNullOrWhiteSpace(termo)
+        var termo = PesquisaEntry.Text?.Trim();
+        var itens = string.IsNullOrEmpty(termo)
             ? _todosOsItens
             : _todosOsItens.Where(i =>
-                i.ProdutoNome.Contains(termo, StringComparison.OrdinalIgnoreCase) ||
-                i.DetalheTexto.Contains(termo, StringComparison.OrdinalIgnoreCase)).ToList(); // tambem acha por retirante, documento, destino
+                BuscaTexto.Contem(i.ProdutoNome, termo) ||
+                BuscaTexto.Contem(i.DetalheTexto, termo)).ToList(); // tambem acha por retirante, documento, destino
+
+        MovimentacoesCollectionView.ItemsSource = itens;
+        ResultadoLabel.Text = itens.Count == 1 ? "1 movimentação encontrada." : $"{itens.Count} movimentações encontradas.";
+    }
+
+    // ---- Filtros de tipo, situacao e periodo ----
+
+    private void OnFiltroChanged(object? sender, EventArgs e)
+    {
+        if (_carregandoFiltros) return;
+        CarregarHistorico();
+    }
+
+    private void OnFiltrarPeriodoToggled(object? sender, ToggledEventArgs e)
+    {
+        PeriodoLayout.IsVisible = e.Value;
+        CarregarHistorico();
+    }
+
+    private void OnPeriodoChanged(object? sender, DateChangedEventArgs e)
+    {
+        if (_carregandoFiltros) return;
+        CarregarHistorico();
+    }
+
+    private void MostrarMensagem(string? texto)
+    {
+        MensagemLabel.Text = texto ?? string.Empty;
+        MensagemLabel.IsVisible = !string.IsNullOrEmpty(texto);
     }
 
     private async void OnEntradaClicked(object? sender, EventArgs e)

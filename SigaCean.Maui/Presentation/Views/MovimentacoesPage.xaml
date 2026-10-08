@@ -2,24 +2,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SigaCean.Presentation.ViewModels"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
              x:Class="SigaCean.Presentation.Views.MovimentacoesPage"
              Title="Movimentações">
 
     <ScrollView>
         <VerticalStackLayout Padding="28" Spacing="18">
 
-            <Grid ColumnDefinitions="*,Auto">
-                <Label Grid.Column="0" Text="CEAN • CENTRO DE APOIO AOS ANIMAIS" Style="{StaticResource EyebrowLabel}" VerticalOptions="Center" />
-                <HorizontalStackLayout Grid.Column="1" Spacing="9" VerticalOptions="Center">
-                    <Border StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Padding="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
-                        <Label x:Name="UsuarioInicialLabel" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                    </Border>
-                    <VerticalStackLayout Spacing="0">
-                        <Label x:Name="UsuarioNomeLabel" FontSize="12" />
-                        <Label x:Name="UsuarioPerfilLabel" Style="{StaticResource MutedLabel}" FontSize="10" />
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-            </Grid>
+            <views:CabecalhoView x:Name="CabecalhoControl" />
+
+            <views:AvisoBanner x:Name="AvisoBannerControl" />
 
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
@@ -37,7 +29,31 @@
                     <Label Text="Histórico" Style="{StaticResource CardTitle}" />
                     <Entry x:Name="PesquisaEntry" Placeholder="Pesquisar por produto, retirante, destino ou documento..." TextChanged="OnPesquisaTextChanged" />
 
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Tipo" Style="{StaticResource FieldLabel}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="Situação" Style="{StaticResource FieldLabel}" />
+                        <Picker Grid.Row="1" Grid.Column="0" x:Name="TipoFiltroPicker" Title="Todos os tipos" SelectedIndexChanged="OnFiltroChanged" />
+                        <Picker Grid.Row="1" Grid.Column="1" x:Name="StatusFiltroPicker" Title="Todas as situações" SelectedIndexChanged="OnFiltroChanged" />
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="8">
+                        <Switch x:Name="FiltrarPeriodoSwitch" Toggled="OnFiltrarPeriodoToggled" />
+                        <Label Text="Filtrar por período" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Grid x:Name="PeriodoLayout" IsVisible="False" ColumnDefinitions="*,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label Grid.Row="0" Grid.Column="0" Text="De" Style="{StaticResource FieldLabel}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="Até" Style="{StaticResource FieldLabel}" />
+                        <DatePicker Grid.Row="1" Grid.Column="0" x:Name="DataInicioPicker" DateSelected="OnPeriodoChanged" />
+                        <DatePicker Grid.Row="1" Grid.Column="1" x:Name="DataFimPicker" DateSelected="OnPeriodoChanged" />
+                    </Grid>
+
+                    <Label x:Name="MensagemLabel" TextColor="{StaticResource Red}" IsVisible="False" />
+                    <Label x:Name="ResultadoLabel" Style="{StaticResource MutedLabel}" />
+
                     <CollectionView x:Name="MovimentacoesCollectionView">
+                        <CollectionView.EmptyView>
+                            <Label Text="Nenhuma movimentação encontrada." Style="{StaticResource MutedLabel}" Padding="0,12" />
+                        </CollectionView.EmptyView>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:MovimentacaoHistoricoItem">
                                 <Border Margin="0,4" Padding="12">

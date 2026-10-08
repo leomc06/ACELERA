@@ -8,6 +8,5 @@ public class EntradaEstoque : Movimentacao
     public string? NumeroAF { get; init; } // so faz sentido para compra/licitacao
     public string? Documento { get; init; } // nota fiscal, pedido de compra ou documento de transferencia/doacao
     public string? DetalheOrigem { get; init; } // ex.: nome do doador, "Santa Casa", etc.
-    public string? Lote { get; init; }
     public DateOnly? DataValidade { get; init; }
 }

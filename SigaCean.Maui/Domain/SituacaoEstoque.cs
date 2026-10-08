@@ -4,6 +4,7 @@ namespace SigaCean.Domain;
 public enum SituacaoEstoque
 {
     Todos,
+    SemEstoque,
     Critico,
     AbaixoDoMinimo,
     ValidadeProxima,

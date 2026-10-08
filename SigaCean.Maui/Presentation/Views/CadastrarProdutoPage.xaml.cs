@@ -6,20 +6,17 @@ namespace SigaCean.Presentation.Views;
 public partial class CadastrarProdutoPage : ContentPage
 {
     private readonly ProdutoService _produtoService;
+    private readonly AvisoService _avisoService;
     private Guid? _produtoId;
 
     private static readonly (CategoriaProduto Valor, string Texto)[] Categorias =
-    [
-        (CategoriaProduto.Alimentar, "Alimentar"),
-        (CategoriaProduto.Insumo, "Insumo"),
-        (CategoriaProduto.EquipamentoHospitalar, "Equipamento hospitalar"),
-        (CategoriaProduto.Medicamento, "Medicamento")
-    ];
+        Rotulos.Categorias.Select(c => (c, Rotulos.Categoria(c))).ToArray();
 
-    public CadastrarProdutoPage(ProdutoService produtoService)
+    public CadastrarProdutoPage(ProdutoService produtoService, AvisoService avisoService)
     {
         InitializeComponent();
         _produtoService = produtoService;
+        _avisoService = avisoService;
         CategoriaPicker.ItemsSource = Categorias.Select(c => c.Texto).ToList();
     }
 
@@ -78,14 +75,21 @@ public partial class CadastrarProdutoPage : ContentPage
             if (!continuar) return;
         }
 
-        if (_produtoId is null)
+        var nome = NomeEntry.Text.Trim();
+        try
         {
-            _produtoService.Cadastrar(NomeEntry.Text, categoria, apresentacao, estoqueMinimo);
+            if (_produtoId is null)
+                _produtoService.Cadastrar(nome, categoria, apresentacao, estoqueMinimo);
+            else
+                _produtoService.Alterar(_produtoId.Value, nome, categoria, apresentacao, estoqueMinimo);
         }
-        else
+        catch (InvalidOperationException ex)
         {
-            _produtoService.Alterar(_produtoId.Value, NomeEntry.Text, categoria, apresentacao, estoqueMinimo);
+            MostrarErro(ex.Message);
+            return;
         }
+
+        _avisoService.Publicar(_produtoId is null ? $"Produto cadastrado: {nome}." : $"Produto atualizado: {nome}.");
 
         await Navigation.PopAsync();
     }

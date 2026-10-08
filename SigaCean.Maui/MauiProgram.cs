@@ -54,6 +54,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<MovimentacaoService>();
 		builder.Services.AddSingleton<EstoqueService>();
 		builder.Services.AddSingleton<RelatorioService>();
+		builder.Services.AddSingleton<AvisoService>();
 
 		builder.Services.AddTransient<AppShell>();
 		builder.Services.AddTransient<LoginPage>();

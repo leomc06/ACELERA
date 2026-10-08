@@ -7,9 +7,11 @@ public class MovimentacaoService(DataStore dataStore)
 {
     public EntradaEstoque RegistrarEntrada(
         Produto produto, int quantidade, TipoOrigemEntrada tipoOrigem,
-        string? numeroAF, string? detalheOrigem, string? lote, DateOnly? dataValidade, Usuario? responsavel,
+        string? numeroAF, string? detalheOrigem, DateOnly? dataValidade, Usuario? responsavel,
         string? documento = null)
     {
+        ValidarMovimentacao(produto, quantidade);
+
         var entrada = new EntradaEstoque
         {
             Produto = produto,
@@ -18,25 +20,28 @@ public class MovimentacaoService(DataStore dataStore)
             NumeroAF = numeroAF,
             Documento = documento,
             DetalheOrigem = detalheOrigem,
-            Lote = lote,
             DataValidade = dataValidade,
             UsuarioResponsavel = responsavel
         };
 
-        produto.AdicionarQuantidade(quantidade, lote, dataValidade);
+        produto.AdicionarQuantidade(quantidade, dataValidade);
         dataStore.Movimentacoes.Add(entrada);
         return entrada;
     }
 
     public SaidaEstoque RegistrarSaida(Produto produto, int quantidade, string destino, Usuario? responsavel, string? retiradoPor = null)
     {
-        var consumidos = produto.ConsumirQuantidade(quantidade); // FEFO: consome primeiro o lote que vence mais cedo
+        ValidarMovimentacao(produto, quantidade);
+        if (string.IsNullOrWhiteSpace(destino))
+            throw new InvalidOperationException("Informe o destino da saída.");
+
+        var consumidos = produto.ConsumirQuantidade(quantidade); // FEFO: sai primeiro o que vence mais cedo
 
         var saida = new SaidaEstoque
         {
             Produto = produto,
             Quantidade = quantidade,
-            Destino = destino,
+            Destino = destino.Trim(),
             RetiradoPor = retiradoPor,
             UsuarioResponsavel = responsavel
         };
@@ -47,12 +52,17 @@ public class MovimentacaoService(DataStore dataStore)
 
     public AjusteBalanco RegistrarAjusteBalanco(Produto produto, int quantidadeApurada, Usuario? responsavel)
     {
+        if (!produto.Ativo)
+            throw new InvalidOperationException($"O produto '{produto.Nome}' está inativo e não aceita movimentações.");
+        if (quantidadeApurada < 0)
+            throw new InvalidOperationException("A quantidade apurada não pode ser negativa.");
+
         var quantidadeAnterior = produto.QuantidadeAtual;
         var diferenca = quantidadeApurada - quantidadeAnterior;
 
         IReadOnlyList<LoteConsumido> consumidos = [];
         if (diferenca > 0)
-            produto.AdicionarQuantidade(diferenca, null, null);
+            produto.AdicionarQuantidade(diferenca, null);
         else if (diferenca < 0)
             consumidos = produto.ConsumirQuantidade(-diferenca);
 
@@ -69,6 +79,15 @@ public class MovimentacaoService(DataStore dataStore)
         return ajuste;
     }
 
+    // Regras comuns de entrada e saida: o servico recusa sozinho o que a tela deixaria passar, sem alterar nada.
+    private static void ValidarMovimentacao(Produto produto, int quantidade)
+    {
+        if (!produto.Ativo)
+            throw new InvalidOperationException($"O produto '{produto.Nome}' está inativo e não aceita movimentações.");
+        if (quantidade <= 0)
+            throw new InvalidOperationException("A quantidade deve ser maior que zero.");
+    }
+
     // Corrigir e cancelar desfazem o efeito da movimentacao no estoque; a movimentacao fica no historico com o motivo.
     public void Corrigir(Guid movimentacaoId, string motivo) =>
         Desfazer(movimentacaoId, motivo, StatusMovimentacao.Corrigida);
@@ -78,6 +97,9 @@ public class MovimentacaoService(DataStore dataStore)
 
     private void Desfazer(Guid movimentacaoId, string motivo, StatusMovimentacao novoStatus)
     {
+        if (string.IsNullOrWhiteSpace(motivo))
+            throw new InvalidOperationException("Informe o motivo antes de continuar.");
+
         var movimentacao = dataStore.Movimentacoes.First(m => m.Id == movimentacaoId);
 
         if (movimentacao.Status != StatusMovimentacao.Ativa)
@@ -94,13 +116,13 @@ public class MovimentacaoService(DataStore dataStore)
         switch (movimentacao)
         {
             case EntradaEstoque entrada:
-                entrada.Produto.RemoverDoLote(entrada.Lote, entrada.DataValidade, entrada.Quantidade);
+                entrada.Produto.RemoverDoLote(entrada.DataValidade, entrada.Quantidade);
                 break;
             case SaidaEstoque saida:
                 saida.Produto.DevolverLotes(saida.LotesConsumidos);
                 break;
             case AjusteBalanco ajuste when ajuste.Quantidade > 0:
-                ajuste.Produto.RemoverDoLote(null, null, ajuste.Quantidade);
+                ajuste.Produto.RemoverDoLote(null, ajuste.Quantidade);
                 break;
             case AjusteBalanco ajuste when ajuste.Quantidade < 0:
                 ajuste.Produto.DevolverLotes(ajuste.LotesConsumidos);
@@ -108,11 +130,23 @@ public class MovimentacaoService(DataStore dataStore)
         }
     }
 
-    public IReadOnlyList<Movimentacao> ObterHistorico(Produto? produto = null, DateTime? dataInicio = null, DateTime? dataFim = null) =>
+    // Filtros opcionais e combinaveis; o mais recente vem primeiro. dataFim e o limite maximo da data/hora (inclusive).
+    public IReadOnlyList<Movimentacao> ObterHistorico(
+        Produto? produto = null, DateTime? dataInicio = null, DateTime? dataFim = null,
+        TipoMovimentacao? tipo = null, StatusMovimentacao? status = null) =>
         dataStore.Movimentacoes
             .Where(m => produto is null || m.Produto.Id == produto.Id)
             .Where(m => dataInicio is null || m.Data >= dataInicio)
             .Where(m => dataFim is null || m.Data <= dataFim)
+            .Where(m => tipo is null || TipoDe(m) == tipo)
+            .Where(m => status is null || m.Status == status)
             .OrderByDescending(m => m.Data)
             .ToList();
+
+    private static TipoMovimentacao TipoDe(Movimentacao m) => m switch
+    {
+        EntradaEstoque => TipoMovimentacao.Entrada,
+        SaidaEstoque => TipoMovimentacao.Saida,
+        _ => TipoMovimentacao.Ajuste
+    };
 }

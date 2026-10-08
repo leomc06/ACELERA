@@ -8,13 +8,15 @@ public partial class RegistrarSaidaPage : ContentPage
     private readonly ProdutoService _produtoService;
     private readonly MovimentacaoService _movimentacaoService;
     private readonly UsuarioService _usuarioService;
+    private readonly AvisoService _avisoService;
 
-    public RegistrarSaidaPage(ProdutoService produtoService, MovimentacaoService movimentacaoService, UsuarioService usuarioService)
+    public RegistrarSaidaPage(ProdutoService produtoService, MovimentacaoService movimentacaoService, UsuarioService usuarioService, AvisoService avisoService)
     {
         InitializeComponent();
         _produtoService = produtoService;
         _movimentacaoService = movimentacaoService;
         _usuarioService = usuarioService;
+        _avisoService = avisoService;
     }
 
     protected override void OnAppearing()
@@ -87,6 +89,7 @@ public partial class RegistrarSaidaPage : ContentPage
             return;
         }
 
+        _avisoService.Publicar($"Saída registrada: {produto.Nome} (−{quantidade}). Estoque agora: {produto.QuantidadeAtual}.");
         await Navigation.PopAsync();
     }
 

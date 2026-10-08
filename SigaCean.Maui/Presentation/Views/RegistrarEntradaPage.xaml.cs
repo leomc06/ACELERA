@@ -8,6 +8,7 @@ public partial class RegistrarEntradaPage : ContentPage
     private readonly ProdutoService _produtoService;
     private readonly MovimentacaoService _movimentacaoService;
     private readonly UsuarioService _usuarioService;
+    private readonly AvisoService _avisoService;
 
     private static readonly (TipoOrigemEntrada Valor, string Texto)[] TiposOrigem =
     [
@@ -16,12 +17,13 @@ public partial class RegistrarEntradaPage : ContentPage
         (TipoOrigemEntrada.Doacao, "Doação")
     ];
 
-    public RegistrarEntradaPage(ProdutoService produtoService, MovimentacaoService movimentacaoService, UsuarioService usuarioService)
+    public RegistrarEntradaPage(ProdutoService produtoService, MovimentacaoService movimentacaoService, UsuarioService usuarioService, AvisoService avisoService)
     {
         InitializeComponent();
         _produtoService = produtoService;
         _movimentacaoService = movimentacaoService;
         _usuarioService = usuarioService;
+        _avisoService = avisoService;
     }
 
     protected override void OnAppearing()
@@ -72,22 +74,40 @@ public partial class RegistrarEntradaPage : ContentPage
             $"Produto: {produto.Nome}\n" +
             $"Quantidade: {quantidade}\n" +
             $"Estoque: {produto.QuantidadeAtual} → {produto.QuantidadeAtual + quantidade}\n" +
-            $"Origem: {TiposOrigem[TipoOrigemPicker.SelectedIndex].Texto}",
+            $"Origem: {TiposOrigem[TipoOrigemPicker.SelectedIndex].Texto}" +
+            DescreverValidade(dataValidade),
             "Confirmar", "Revisar");
         if (!confirmou) return;
 
-        _movimentacaoService.RegistrarEntrada(
-            produto,
-            quantidade,
-            tipoOrigem,
-            string.IsNullOrWhiteSpace(NumeroAfEntry.Text) ? null : NumeroAfEntry.Text.Trim(),
-            string.IsNullOrWhiteSpace(DetalheOrigemEntry.Text) ? null : DetalheOrigemEntry.Text.Trim(),
-            string.IsNullOrWhiteSpace(LoteEntry.Text) ? null : LoteEntry.Text.Trim(),
-            dataValidade,
-            _usuarioService.UsuarioLogado,
-            string.IsNullOrWhiteSpace(DocumentoEntry.Text) ? null : DocumentoEntry.Text.Trim());
+        try
+        {
+            _movimentacaoService.RegistrarEntrada(
+                produto,
+                quantidade,
+                tipoOrigem,
+                string.IsNullOrWhiteSpace(NumeroAfEntry.Text) ? null : NumeroAfEntry.Text.Trim(),
+                string.IsNullOrWhiteSpace(DetalheOrigemEntry.Text) ? null : DetalheOrigemEntry.Text.Trim(),
+                dataValidade,
+                _usuarioService.UsuarioLogado,
+                string.IsNullOrWhiteSpace(DocumentoEntry.Text) ? null : DocumentoEntry.Text.Trim());
+        }
+        catch (InvalidOperationException ex)
+        {
+            MostrarErro(ex.Message);
+            return;
+        }
 
+        _avisoService.Publicar($"Entrada registrada: {produto.Nome} (+{quantidade}). Estoque agora: {produto.QuantidadeAtual}.");
         await Navigation.PopAsync();
+    }
+
+    // Mostra a validade na conferencia; uma data ja passada e avisada, pois o produto entraria como vencido.
+    private static string DescreverValidade(DateOnly? dataValidade)
+    {
+        if (dataValidade is null) return string.Empty;
+
+        var aviso = dataValidade < DateOnly.FromDateTime(DateTime.Today) ? " (JÁ VENCIDA)" : string.Empty;
+        return $"\nValidade: {dataValidade:dd/MM/yyyy}{aviso}";
     }
 
     private void MostrarErro(string mensagem)

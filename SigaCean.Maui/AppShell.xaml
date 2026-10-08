@@ -19,9 +19,10 @@
     </Shell.FlyoutHeader>
 
     <Shell.FlyoutFooter>
-        <Grid BackgroundColor="White">
-            <Label Text="CEAN • Cruzeiro - SP" TextColor="{StaticResource Muted}" FontSize="11" Padding="18,12" />
-        </Grid>
+        <VerticalStackLayout BackgroundColor="White" Padding="18,0,18,6" Spacing="6">
+            <Button Text="Sair" Clicked="OnSairClicked" />
+            <Label Text="CEAN • Cruzeiro - SP" TextColor="{StaticResource Muted}" FontSize="11" Padding="0,6" />
+        </VerticalStackLayout>
     </Shell.FlyoutFooter>
 
     <Shell.ItemTemplate>

@@ -9,14 +9,7 @@ public class ProdutoEstoqueItem
     public required Produto Produto { get; init; }
 
     public string Nome => Produto.Nome;
-    public string Categoria => Produto.Categoria switch
-    {
-        CategoriaProduto.Alimentar => "Alimentar",
-        CategoriaProduto.Insumo => "Insumo",
-        CategoriaProduto.EquipamentoHospitalar => "Equipamento hospitalar",
-        CategoriaProduto.Medicamento => "Medicamento",
-        _ => Produto.Categoria.ToString()
-    };
+    public string Categoria => Rotulos.Categoria(Produto.Categoria);
 
     public int QuantidadeAtual => Produto.QuantidadeAtual;
     public string EstoqueMinimoTexto => Produto.EstoqueMinimo?.ToString() ?? "não definido";
@@ -26,8 +19,9 @@ public class ProdutoEstoqueItem
         ? Color.FromArgb("#169B62")
         : Color.FromArgb("#D95757");
 
+    public bool MostrarAlertaSemEstoque => Produto.EstaSemEstoque;
     public bool MostrarAlertaCritico => Produto.EstaCritico;
     public bool MostrarAlertaVencido => Produto.TemLoteVencido(DateOnly.FromDateTime(DateTime.Today));
-    public bool MostrarAlertaValidadeProxima => !MostrarAlertaVencido &&
-        Produto.TemLoteProximoDoVencimento(DateOnly.FromDateTime(DateTime.Today), SigaCean.Services.EstoqueService.DiasAlertaValidade);
+    public bool MostrarAlertaValidadeProxima =>
+        Produto.TemValidadeProxima(DateOnly.FromDateTime(DateTime.Today), SigaCean.Services.EstoqueService.DiasAlertaValidade);
 }

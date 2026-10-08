@@ -1,4 +1,5 @@
 namespace SigaCean.Domain;
 
-// Parcela de um lote retirada por uma saida/ajuste; guardada para que um cancelamento devolva ao lote de origem.
-public record LoteConsumido(string? Codigo, DateOnly? DataValidade, int Quantidade);
+// Parcela do estoque (de uma certa validade) retirada por uma saida/ajuste; guardada para que um cancelamento
+// devolva a quantidade a mesma validade de onde saiu.
+public record LoteConsumido(DateOnly? DataValidade, int Quantidade);

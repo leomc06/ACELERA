@@ -2,24 +2,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SigaCean.Presentation.ViewModels"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
              x:Class="SigaCean.Presentation.Views.EstoquePage"
              Title="Estoque">
 
     <ScrollView>
         <VerticalStackLayout Padding="28" Spacing="18">
 
-            <Grid ColumnDefinitions="*,Auto">
-                <Label Grid.Column="0" Text="CEAN • CENTRO DE APOIO AOS ANIMAIS" Style="{StaticResource EyebrowLabel}" VerticalOptions="Center" />
-                <HorizontalStackLayout Grid.Column="1" Spacing="9" VerticalOptions="Center">
-                    <Border StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Padding="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
-                        <Label x:Name="UsuarioInicialLabel" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                    </Border>
-                    <VerticalStackLayout Spacing="0">
-                        <Label x:Name="UsuarioNomeLabel" FontSize="12" />
-                        <Label x:Name="UsuarioPerfilLabel" Style="{StaticResource MutedLabel}" FontSize="10" />
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-            </Grid>
+            <views:CabecalhoView x:Name="CabecalhoControl" />
+
+            <views:AvisoBanner x:Name="AvisoBannerControl" />
 
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
@@ -48,6 +40,9 @@
                     <Label x:Name="ResultadoLabel" Style="{StaticResource MutedLabel}" />
 
                     <CollectionView x:Name="ProdutosCollectionView">
+                        <CollectionView.EmptyView>
+                            <Label Text="Nenhum produto encontrado. Ajuste a pesquisa ou os filtros." Style="{StaticResource MutedLabel}" Padding="0,12" />
+                        </CollectionView.EmptyView>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ProdutoEstoqueItem">
                                 <Border Margin="0,4" Padding="12">
@@ -62,6 +57,7 @@
                                             <Label Text="{Binding Nome}" FontAttributes="Bold" />
                                             <Label Text="{Binding Categoria}" Style="{StaticResource MutedLabel}" />
                                             <HorizontalStackLayout Spacing="8">
+                                                <Label Text="SEM ESTOQUE" IsVisible="{Binding MostrarAlertaSemEstoque}" TextColor="{StaticResource Red}" FontSize="11" FontAttributes="Bold" />
                                                 <Label Text="VENCIDO" IsVisible="{Binding MostrarAlertaVencido}" TextColor="{StaticResource Red}" FontSize="11" FontAttributes="Bold" />
                                                 <Label Text="Validade próxima" IsVisible="{Binding MostrarAlertaValidadeProxima}" TextColor="{StaticResource Orange}" FontSize="11" FontAttributes="Bold" />
                                                 <Label Text="Estoque crítico" IsVisible="{Binding MostrarAlertaCritico}" TextColor="{StaticResource Red}" FontSize="11" FontAttributes="Bold" />

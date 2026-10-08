@@ -8,13 +8,15 @@ public partial class AjusteBalancoPage : ContentPage
     private readonly ProdutoService _produtoService;
     private readonly MovimentacaoService _movimentacaoService;
     private readonly UsuarioService _usuarioService;
+    private readonly AvisoService _avisoService;
 
-    public AjusteBalancoPage(ProdutoService produtoService, MovimentacaoService movimentacaoService, UsuarioService usuarioService)
+    public AjusteBalancoPage(ProdutoService produtoService, MovimentacaoService movimentacaoService, UsuarioService usuarioService, AvisoService avisoService)
     {
         InitializeComponent();
         _produtoService = produtoService;
         _movimentacaoService = movimentacaoService;
         _usuarioService = usuarioService;
+        _avisoService = avisoService;
     }
 
     protected override void OnAppearing()
@@ -74,8 +76,17 @@ public partial class AjusteBalancoPage : ContentPage
             "Confirmar", "Revisar");
         if (!confirmou) return;
 
-        _movimentacaoService.RegistrarAjusteBalanco(produto, quantidadeApurada, _usuarioService.UsuarioLogado);
+        try
+        {
+            _movimentacaoService.RegistrarAjusteBalanco(produto, quantidadeApurada, _usuarioService.UsuarioLogado);
+        }
+        catch (InvalidOperationException ex)
+        {
+            MostrarErro(ex.Message);
+            return;
+        }
 
+        _avisoService.Publicar($"Ajuste de balanço registrado: {produto.Nome}. Estoque agora: {produto.QuantidadeAtual}.");
         await Navigation.PopAsync();
     }
 

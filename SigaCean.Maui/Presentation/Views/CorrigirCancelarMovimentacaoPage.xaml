@@ -15,6 +15,14 @@
                 <Label Text="Informe o motivo. O efeito desta movimentação no estoque será desfeito." Style="{StaticResource PageSubtitle}" />
             </VerticalStackLayout>
 
+            <Border Padding="12" BackgroundColor="{StaticResource InfoBackground}" Stroke="Transparent">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Qual botão usar?" FontAttributes="Bold" />
+                    <Label Text="Cancelar Movimentação: o lançamento não deveria ter existido. O estoque volta ao que era antes e nada mais é preciso fazer." Style="{StaticResource MutedLabel}" />
+                    <Label Text="Corrigir Movimentação: o lançamento estava com dados errados. O estoque volta ao que era antes e a movimentação fica marcada como corrigida, mas o sistema não cria a nova. Depois, registre você mesmo a entrada, saída ou ajuste certo." Style="{StaticResource MutedLabel}" />
+                </VerticalStackLayout>
+            </Border>
+
             <Border Padding="18">
                 <VerticalStackLayout Spacing="16">
                     <Label Text="Movimentação selecionada" Style="{StaticResource CardTitle}" />

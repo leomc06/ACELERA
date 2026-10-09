@@ -11,6 +11,9 @@ public partial class AppShell : Shell
     // (sidebar: Estoque, Movimentações, Relatórios) — sem inventar secoes que o app nao tem.
     private readonly IServiceProvider _serviceProvider;
     private readonly UsuarioService _usuarioService;
+    private readonly FlyoutItem _estoqueItem;
+    private readonly FlyoutItem _movimentacoesItem;
+    private readonly EstoquePage _estoquePage;
 
     public AppShell(IServiceProvider serviceProvider, UsuarioService usuarioService)
     {
@@ -18,8 +21,14 @@ public partial class AppShell : Shell
         _serviceProvider = serviceProvider;
         _usuarioService = usuarioService;
 
-        Items.Add(CriarItem("▣  Estoque", serviceProvider.GetRequiredService<EstoquePage>()));
-        Items.Add(CriarItem("⇄  Movimentações", serviceProvider.GetRequiredService<MovimentacoesPage>()));
+        Items.Add(CriarItem("⌂  Painel", serviceProvider.GetRequiredService<PainelPage>()));
+
+        _estoquePage = serviceProvider.GetRequiredService<EstoquePage>();
+        _estoqueItem = CriarItem("▣  Estoque", _estoquePage);
+        Items.Add(_estoqueItem);
+
+        _movimentacoesItem = CriarItem("⇄  Movimentações", serviceProvider.GetRequiredService<MovimentacoesPage>());
+        Items.Add(_movimentacoesItem);
 
         // UC08 (CONFIRMADO): Gerar Relatorio de Consumo e uma acao exclusiva do Administrativo.
         if (usuarioService.UsuarioLogado?.Perfil == Perfil.Administrativo)
@@ -27,6 +36,15 @@ public partial class AppShell : Shell
             Items.Add(CriarItem("▥  Relatório", serviceProvider.GetRequiredService<RelatorioConsumoPage>()));
         }
     }
+
+    // Usados pelo Painel: abre o Estoque ja filtrado, ou o historico completo.
+    public void IrParaEstoque(SituacaoEstoque situacao)
+    {
+        _estoquePage.AplicarSituacao(situacao);
+        CurrentItem = _estoqueItem;
+    }
+
+    public void IrParaMovimentacoes() => CurrentItem = _movimentacoesItem;
 
     // Volta para o login para trocar de usuario. Os dados em memoria continuam; so a sessao termina.
     // Um novo AppShell e criado no proximo login, pois o menu depende do perfil de quem entrou.

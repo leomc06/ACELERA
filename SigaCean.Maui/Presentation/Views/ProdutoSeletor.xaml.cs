@@ -30,6 +30,9 @@ public partial class ProdutoSeletor : ContentView
         ResumoLabel.Text = string.Empty;
     }
 
+    // Deixa um produto ja escolhido (ex.: vindo da ficha do produto).
+    public void Selecionar(Produto produto) => Definir(produto);
+
     private void OnBuscaFocused(object? sender, FocusEventArgs e)
     {
         // Ao entrar no campo sem produto escolhido, ja mostra a lista para escolher.

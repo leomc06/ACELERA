@@ -10,7 +10,7 @@
         </Border>
         <VerticalStackLayout Spacing="0">
             <Label x:Name="UsuarioNomeLabel" FontSize="12" />
-            <Label x:Name="UsuarioPerfilLabel" Style="{StaticResource MutedLabel}" FontSize="10" />
+            <Label x:Name="UsuarioPerfilLabel" Style="{StaticResource MutedLabel}" FontSize="11" />
         </VerticalStackLayout>
     </HorizontalStackLayout>
 </Grid>

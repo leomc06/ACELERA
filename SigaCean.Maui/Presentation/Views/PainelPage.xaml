@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SigaCean.Presentation.ViewModels"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             x:Class="SigaCean.Presentation.Views.PainelPage"
+             Title="Painel">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18">
+
+            <views:CabecalhoView x:Name="CabecalhoControl" />
+
+            <views:AvisoBanner x:Name="AvisoBannerControl" />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Painel" Style="{StaticResource PageTitle}" />
+                <Label Text="O que precisa de atenção no estoque. Toque em um quadro para ver os produtos." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <FlexLayout x:Name="AcoesAdministrativoLayout" JustifyContent="Start" Wrap="Wrap" AlignItems="Start" Margin="-4,-8,0,0">
+                <Button Text="＋ Entrada" Style="{StaticResource GreenButton}" Clicked="OnEntradaClicked" Margin="4" />
+                <Button Text="− Saída" Style="{StaticResource OrangeButton}" Clicked="OnSaidaClicked" Margin="4" />
+            </FlexLayout>
+
+            <FlexLayout x:Name="IndicadoresLayout" Wrap="Wrap" JustifyContent="Start" Margin="-6,0,0,0" />
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Últimas movimentações" Style="{StaticResource CardTitle}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="Ver todas" Clicked="OnVerTodasClicked" Padding="12,4" MinimumHeightRequest="32" />
+                    </Grid>
+                    <Label x:Name="SemMovimentacoesLabel" Text="Ainda não há movimentações." Style="{StaticResource MutedLabel}" IsVisible="False" />
+                    <VerticalStackLayout x:Name="MovimentacoesLayout" Spacing="4">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:MovimentacaoHistoricoItem">
+                                <Grid ColumnDefinitions="10,*,Auto" ColumnSpacing="12" Padding="0,6">
+                                    <BoxView Grid.Column="0" Color="{Binding CorTipo}" WidthRequest="6" CornerRadius="3" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="{Binding TipoTexto}" FontAttributes="Bold" TextColor="{Binding CorTipo}" />
+                                            <Label Text="{Binding ProdutoNome}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding DataFormatada}" FontSize="12" TextColor="{StaticResource Muted}" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="{Binding QuantidadeTexto}" FontAttributes="Bold" TextColor="{Binding CorTipo}" VerticalOptions="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

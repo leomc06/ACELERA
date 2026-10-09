@@ -5,6 +5,11 @@ namespace SigaCean.Presentation.Views;
 
 public partial class RegistrarEntradaPage : ContentPage
 {
+    private Guid? _produtoInicialId;
+
+    // Abre a tela ja com um produto escolhido (vindo da ficha do produto).
+    public void PreSelecionar(Guid produtoId) => _produtoInicialId = produtoId;
+
     private readonly ProdutoService _produtoService;
     private readonly MovimentacaoService _movimentacaoService;
     private readonly UsuarioService _usuarioService;
@@ -32,8 +37,22 @@ public partial class RegistrarEntradaPage : ContentPage
 
         ProdutoSeletorControl.Carregar(_produtoService.ObterTodos());
 
+        if (_produtoInicialId is { } id)
+        {
+            var inicial = _produtoService.ObterTodos().FirstOrDefault(p => p.Id == id);
+            if (inicial is not null)
+            {
+                ProdutoSeletorControl.Selecionar(inicial);
+                QuantidadeEntry.Focus(); // produto ja escolhido: o proximo passo e a quantidade
+            }
+            _produtoInicialId = null;
+        }
+
         TipoOrigemPicker.ItemsSource = TiposOrigem.Select(t => t.Texto).ToList();
     }
+
+    // Enter no ultimo campo registra a entrada (a conferencia continua sendo exibida antes de gravar).
+    private void OnCompleted(object? sender, EventArgs e) => OnRegistrarClicked(sender, e);
 
     private void OnPossuiValidadeToggled(object? sender, ToggledEventArgs e)
     {

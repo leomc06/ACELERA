@@ -5,11 +5,10 @@
 
     <VerticalStackLayout Spacing="4">
 
-        <!-- Campo unico: digita-se para buscar e o produto escolhido fica escrito aqui (mesma altura dos demais campos). -->
-        <Border HeightRequest="44" Padding="0" StrokeShape="RoundRectangle 8" BackgroundColor="#E6F2F1" Stroke="#B5D3D0">
-            <Entry x:Name="BuscaEntry" Placeholder="Digite para buscar o produto..." MinimumHeightRequest="0" VerticalOptions="Center"
-                   TextChanged="OnBuscaChanged" Focused="OnBuscaFocused" Unfocused="OnBuscaUnfocused" />
-        </Border>
+        <!-- Campo unico: digita-se para buscar e o produto escolhido fica escrito aqui. -->
+        <Entry x:Name="BuscaEntry" Placeholder="Digite para buscar o produto..."
+               SemanticProperties.Description="Buscar produto pelo nome"
+               TextChanged="OnBuscaChanged" Focused="OnBuscaFocused" Unfocused="OnBuscaUnfocused" />
 
         <!-- Resultados: aparecem sozinhos enquanto se digita. -->
         <Border x:Name="ListaBorder" IsVisible="False" Padding="0" StrokeShape="RoundRectangle 8">

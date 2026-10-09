@@ -33,6 +33,9 @@ public partial class CadastrarProdutoPage : ContentPage
         CategoriaPicker.SelectedIndex = Array.FindIndex(Categorias, c => c.Valor == produto.Categoria);
     }
 
+    // Enter no ultimo campo salva o produto.
+    private void OnCompleted(object? sender, EventArgs e) => OnSalvarClicked(sender, e);
+
     private async void OnSalvarClicked(object? sender, EventArgs e)
     {
         MensagemErroLabel.IsVisible = false;
@@ -62,6 +65,12 @@ public partial class CadastrarProdutoPage : ContentPage
 
         var categoria = Categorias[CategoriaPicker.SelectedIndex].Valor;
         var apresentacao = string.IsNullOrWhiteSpace(ApresentacaoEntry.Text) ? null : ApresentacaoEntry.Text;
+
+        if (_produtoService.ExisteIdentico(NomeEntry.Text, apresentacao, _produtoId))
+        {
+            MostrarErro($"Já existe um produto \"{NomeEntry.Text.Trim()}\" com a mesma apresentação.");
+            return;
+        }
 
         var existente = _produtoService.ObterPorNomeSemelhante(NomeEntry.Text, _produtoId);
         if (existente is not null)

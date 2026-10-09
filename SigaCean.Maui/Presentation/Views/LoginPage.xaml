@@ -21,12 +21,17 @@
             <VerticalStackLayout Spacing="14">
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Usuário" Style="{StaticResource FieldLabel}" />
-                    <Entry x:Name="LoginEntry" Placeholder="Usu&#225;rio" />
+                    <Entry x:Name="LoginEntry" Placeholder="Usu&#225;rio" SemanticProperties.Description="Nome de usuário" Completed="OnLoginCompleted" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Senha" Style="{StaticResource FieldLabel}" />
-                    <Entry x:Name="SenhaEntry" Placeholder="Senha" IsPassword="True" />
+                    <Entry x:Name="SenhaEntry" Placeholder="Senha" IsPassword="True" SemanticProperties.Description="Senha" Completed="OnEntrarClicked" />
+                    <HorizontalStackLayout Spacing="4">
+                        <CheckBox x:Name="MostrarSenhaCheck" CheckedChanged="OnMostrarSenhaChanged" VerticalOptions="Center"
+                                  SemanticProperties.Description="Mostrar a senha digitada" />
+                        <Label Text="Mostrar senha" VerticalOptions="Center" Style="{StaticResource MutedLabel}" />
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
 
                 <Label x:Name="MensagemErroLabel" TextColor="{StaticResource Red}" IsVisible="False" HorizontalOptions="Center" />

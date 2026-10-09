@@ -7,6 +7,8 @@
 
     <maui:MauiWinUIApplication.Resources>
         <ResourceDictionary>
+            <!-- O ToggleSwitch do Windows reserva 154px de largura; sem isso o texto ao lado do Switch fica longe dele. -->
+            <x:Double x:Key="ToggleSwitchThemeMinWidth">0</x:Double>
             <SolidColorBrush x:Key="NavigationViewButtonForeground" Color="White" />
             <SolidColorBrush x:Key="NavigationViewButtonForegroundPointerOver" Color="White" />
             <SolidColorBrush x:Key="NavigationViewButtonForegroundPressed" Color="#D9FFFFFF" />

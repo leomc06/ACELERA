@@ -57,13 +57,13 @@
 
                         <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="6">
                             <Label Text="Documento (nota fiscal / pedido)" Style="{StaticResource FieldLabel}" />
-                            <Entry x:Name="DocumentoEntry" Placeholder="Nº da nota fiscal ou do pedido (opcional)" />
+                            <Entry x:Name="DocumentoEntry" Placeholder="Nº da nota fiscal ou do pedido (opcional)" SemanticProperties.Description="Documento da entrada" Completed="OnCompleted" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
                             <HorizontalStackLayout Spacing="8">
-                                <Switch x:Name="PossuiValidadeSwitch" Toggled="OnPossuiValidadeToggled" />
                                 <Label Text="Possui data de validade" VerticalOptions="Center" />
+                                <Switch x:Name="PossuiValidadeSwitch" Toggled="OnPossuiValidadeToggled" SemanticProperties.Description="Informar data de validade" />
                             </HorizontalStackLayout>
                             <DatePicker x:Name="ValidadeDatePicker" IsVisible="False" />
                         </VerticalStackLayout>

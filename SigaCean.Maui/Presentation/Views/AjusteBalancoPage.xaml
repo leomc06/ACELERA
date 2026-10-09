@@ -33,7 +33,7 @@
                             <Label Text="Quantidade apurada na contagem" Style="{StaticResource FieldLabel}" />
                             <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
                         </HorizontalStackLayout>
-                        <Entry x:Name="QuantidadeApuradaEntry" Keyboard="Numeric" Placeholder="Ex.: 27" TextChanged="OnQuantidadeApuradaChanged" />
+                        <Entry x:Name="QuantidadeApuradaEntry" Keyboard="Numeric" Placeholder="Ex.: 27" SemanticProperties.Description="Quantidade apurada na contagem" TextChanged="OnQuantidadeApuradaChanged" Completed="OnCompleted" />
                         <Label x:Name="DiferencaLabel" Style="{StaticResource MutedLabel}" />
                     </VerticalStackLayout>
 

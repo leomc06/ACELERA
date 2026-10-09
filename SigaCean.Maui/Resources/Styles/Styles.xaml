@@ -83,6 +83,24 @@
         <Setter Property="BorderColor" Value="{StaticResource Red}" />
     </Style>
 
+    <!-- Botoes de filtro (chips): o escolhido fica preenchido, os demais so com contorno. -->
+    <Style TargetType="Button" x:Key="Chip">
+        <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource CardBackground}" />
+        <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="14,6" />
+        <Setter Property="MinimumHeightRequest" Value="36" />
+    </Style>
+
+    <Style TargetType="Button" x:Key="ChipEscolhido" BasedOn="{StaticResource Chip}">
+        <Setter Property="TextColor" Value="{StaticResource White}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+    </Style>
+
     <Style TargetType="CheckBox">
         <Setter Property="Color" Value="{StaticResource Primary}" />
         <Setter Property="MinimumHeightRequest" Value="44"/>
@@ -100,7 +118,7 @@
 
     <Style TargetType="Editor">
         <Setter Property="TextColor" Value="{StaticResource Ink}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BackgroundColor" Value="#E6F2F1" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Muted}" />
@@ -110,7 +128,7 @@
 
     <Style TargetType="Entry">
         <Setter Property="TextColor" Value="{StaticResource Ink}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BackgroundColor" Value="#E6F2F1" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Muted}" />
@@ -151,7 +169,7 @@
     <Style TargetType="Label" x:Key="EyebrowLabel">
         <Setter Property="TextColor" Value="{StaticResource Primary}" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="11" />
         <Setter Property="CharacterSpacing" Value="1" />
     </Style>
 

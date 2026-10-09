@@ -5,6 +5,11 @@ namespace SigaCean.Presentation.Views;
 
 public partial class RegistrarSaidaPage : ContentPage
 {
+    private Guid? _produtoInicialId;
+
+    // Abre a tela ja com um produto escolhido (vindo da ficha do produto).
+    public void PreSelecionar(Guid produtoId) => _produtoInicialId = produtoId;
+
     private readonly ProdutoService _produtoService;
     private readonly MovimentacaoService _movimentacaoService;
     private readonly UsuarioService _usuarioService;
@@ -24,6 +29,17 @@ public partial class RegistrarSaidaPage : ContentPage
         base.OnAppearing();
 
         ProdutoSeletorControl.Carregar(_produtoService.ObterTodos());
+
+        if (_produtoInicialId is { } id)
+        {
+            var inicial = _produtoService.ObterTodos().FirstOrDefault(p => p.Id == id);
+            if (inicial is not null)
+            {
+                ProdutoSeletorControl.Selecionar(inicial);
+                QuantidadeEntry.Focus(); // produto ja escolhido: o proximo passo e a quantidade
+            }
+            _produtoInicialId = null;
+        }
         DisponivelLabel.Text = string.Empty;
     }
 
@@ -31,6 +47,31 @@ public partial class RegistrarSaidaPage : ContentPage
     {
         var produto = ProdutoSeletorControl.ProdutoSelecionado;
         DisponivelLabel.Text = produto is null ? string.Empty : $"Disponível em estoque: {produto.QuantidadeAtual}";
+        AtualizarPrevisao();
+    }
+
+    private void OnQuantidadeChanged(object? sender, TextChangedEventArgs e) => AtualizarPrevisao();
+
+    // Enter no ultimo campo registra a saida (a conferencia continua sendo exibida antes de gravar).
+    private void OnCompleted(object? sender, EventArgs e) => OnRegistrarClicked(sender, e);
+
+    // Mostra de quais validades a saida vai tirar o produto (FEFO). So exibe: quem decide e o MovimentacaoService.
+    private void AtualizarPrevisao()
+    {
+        PrevisaoLabel.Text = string.Empty;
+
+        var produto = ProdutoSeletorControl.ProdutoSelecionado;
+        if (produto is null || !int.TryParse(QuantidadeEntry.Text, out var quantidade) || quantidade <= 0 || quantidade > produto.QuantidadeAtual)
+            return;
+
+        try
+        {
+            PrevisaoLabel.Text = "Vai sair de: " + Rotulos.Previsao(_movimentacaoService.PrevisaoDeSaida(produto, quantidade));
+        }
+        catch (InvalidOperationException)
+        {
+            // produto inativo ou quantidade invalida: o erro aparece ao registrar
+        }
     }
 
     private async void OnRegistrarClicked(object? sender, EventArgs e)
@@ -75,7 +116,8 @@ public partial class RegistrarSaidaPage : ContentPage
             $"Quantidade: {quantidade}\n" +
             $"Estoque: {produto.QuantidadeAtual} → {produto.QuantidadeAtual - quantidade}\n" +
             $"Destino: {DestinoEntry.Text.Trim()}\n" +
-            $"Retirado por: {RetiradoPorEntry.Text.Trim()}",
+            $"Retirado por: {RetiradoPorEntry.Text.Trim()}\n" +
+            $"Sai de: {Rotulos.Previsao(_movimentacaoService.PrevisaoDeSaida(produto, quantidade))}",
             "Confirmar", "Revisar");
         if (!confirmou) return;
 

@@ -9,18 +9,24 @@ Os dados ficam **somente em memória**: ao fechar o programa, tudo volta ao esta
 
 ## Funcionalidades
 
-- Cadastro de produtos e consulta do estoque, com busca por nome (ignora maiúsculas e acentos) e filtros por
-  categoria e situação (sem estoque, crítico, abaixo do mínimo, validade próxima, vencido)
+- Painel inicial com o que precisa de atenção (sem estoque, abaixo do mínimo, vencidos, validade próxima); cada quadro
+  abre o Estoque já filtrado
+- Cadastro de produtos e consulta do estoque, com busca por nome (ignora maiúsculas e acentos), filtro por categoria
+  e botões de situação com a contagem de cada uma (sem estoque, crítico, abaixo do mínimo, validade próxima, vencido)
+- Ficha do produto: situação, saldos por validade na ordem em que saem (FEFO) e últimas movimentações; o
+  Veterinário só consulta, e o Administrativo tem atalhos de entrada, saída e edição
 - Categorias: Medicamento, Insumo, Alimentar, Equipamento hospitalar, Higiene e Microchip
 - Registro de entradas (com documento: nota fiscal ou pedido, e validade opcional) e de saídas (com destino e
-  quem retirou); a saída usa primeiro o que vence antes
+  quem retirou, ambos obrigatórios); a saída usa primeiro o que vence antes e a tela mostra de qual validade
+  o produto vai sair antes de confirmar
 - Ajuste de balanço
 - Corrigir ou cancelar uma movimentação (só o perfil Administrativo, com motivo), desfazendo o efeito no estoque
 - Histórico de movimentações, com busca por produto, retirante, destino ou documento e filtros por tipo,
-  situação e período
+  situação e período (mostra 100 por vez, com "Mostrar mais")
 - Relatório de Consumo mensal, trimestral, anual ou por período, com exportação em PDF
 - Confirmação antes de gravar e faixa de aviso depois de cada operação
 - Controle de acesso por usuário, com botão Sair para trocar de usuário
+- Teclado: Enter envia os formulários e o login; no login há "Mostrar senha"
 
 ## Requisitos
 
@@ -69,8 +75,9 @@ Usuários fictícios, criados só para demonstração:
 dotnet test SigaCean.Tests
 ```
 
-São 157 testes das regras de estoque, validade, estoque mínimo, movimentações (inclusive correção e
-cancelamento), busca, histórico, relatório, PDF e login.
+São 191 testes das regras de estoque, validade, estoque mínimo, movimentações (inclusive correção e
+cancelamento), busca, histórico, relatório, PDF e login. Os Services também são testados sozinhos (a tela não é a única
+barreira): saída sem "retirado por", produto duplicado e ids inexistentes são recusados sem alterar nada.
 
 ## Dados de exemplo
 

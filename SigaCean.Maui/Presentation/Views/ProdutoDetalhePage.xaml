@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SigaCean.Presentation.ViewModels"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             x:Class="SigaCean.Presentation.Views.ProdutoDetalhePage"
+             Title="Produto">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18" MaximumWidthRequest="900">
+
+            <views:VoltarButton />
+
+            <VerticalStackLayout Spacing="4">
+                <Label x:Name="NomeLabel" Style="{StaticResource PageTitle}" />
+                <Label x:Name="CategoriaLabel" Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <FlexLayout x:Name="AcoesAdministrativoLayout" JustifyContent="Start" Wrap="Wrap" AlignItems="Start" Margin="-4,-8,0,0">
+                <Button Text="＋ Entrada" Style="{StaticResource GreenButton}" Clicked="OnEntradaClicked" Margin="4" />
+                <Button Text="− Saída" Style="{StaticResource OrangeButton}" Clicked="OnSaidaClicked" Margin="4" />
+                <Button Text="Editar produto" Clicked="OnEditarClicked" Margin="4" />
+            </FlexLayout>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Situação" Style="{StaticResource CardTitle}" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="24">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label x:Name="QuantidadeLabel" FontSize="34" FontAttributes="Bold" />
+                            <Label Text="em estoque" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label x:Name="MinimoLabel" />
+                            <FlexLayout x:Name="AlertasLayout" Wrap="Wrap" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Saldos por validade" Style="{StaticResource CardTitle}" />
+                    <Label Text="Na ordem em que saem do estoque (FEFO): o que vence primeiro sai primeiro; o que não tem validade sai por último."
+                           Style="{StaticResource MutedLabel}" />
+                    <Label x:Name="SemSaldosLabel" Text="Este produto não tem nada em estoque." Style="{StaticResource MutedLabel}" IsVisible="False" />
+                    <VerticalStackLayout x:Name="SaldosLayout" Spacing="6">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SaldoValidadeItem">
+                                <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="10" Padding="0,6">
+                                    <Label Grid.Column="0" Text="{Binding OrdemTexto}" Style="{StaticResource MutedLabel}" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                        <Label Text="{Binding ValidadeTexto}" FontAttributes="Bold" />
+                                        <Label Text="{Binding SituacaoTexto}" TextColor="{Binding CorSituacao}" FontSize="12" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="{Binding QuantidadeTexto}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="18">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Últimas movimentações" Style="{StaticResource CardTitle}" />
+                    <Label x:Name="SemMovimentacoesLabel" Text="Este produto ainda não tem movimentações." Style="{StaticResource MutedLabel}" IsVisible="False" />
+                    <VerticalStackLayout x:Name="MovimentacoesLayout" Spacing="4">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:MovimentacaoHistoricoItem">
+                                <Grid ColumnDefinitions="10,*,Auto" ColumnSpacing="12" Padding="0,6">
+                                    <BoxView Grid.Column="0" Color="{Binding CorTipo}" WidthRequest="6" CornerRadius="3" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="{Binding TipoTexto}" FontAttributes="Bold" TextColor="{Binding CorTipo}" />
+                                            <Label Text="{Binding StatusTexto}" FontSize="12" TextColor="{StaticResource Red}" FontAttributes="Bold" IsVisible="{Binding MostrarStatusEspecial}" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding DetalheTexto}" Style="{StaticResource MutedLabel}" />
+                                        <Label Text="{Binding DataFormatada}" FontSize="12" TextColor="{StaticResource Muted}" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="{Binding QuantidadeTexto}" FontAttributes="Bold" TextColor="{Binding CorTipo}" VerticalOptions="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

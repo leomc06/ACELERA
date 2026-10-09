@@ -162,6 +162,7 @@ public partial class RelatorioConsumoPage : ContentPage
 
         RelatorioCollectionView.ItemsSource = itens.Select(item => new RelatorioConsumoItem { Item = item }).ToList();
         SemResultadosLabel.IsVisible = itens.Count == 0;
+        SemResultadosLabel.Text = TextoSemResultados(itens.Count == 0 && _itensDoPeriodo.Count == 0);
 
         var ajustes = itens.Sum(i => i.TotalAjustes);
         ResumoProdutosLabel.Text = itens.Count.ToString();
@@ -170,6 +171,15 @@ public partial class RelatorioConsumoPage : ContentPage
         ResumoAjustesLabel.Text = ajustes > 0 ? $"+{ajustes}" : ajustes.ToString();
 
         GerarPdfButton.IsEnabled = itens.Count > 0;
+    }
+
+    // Periodo sem nenhuma movimentacao: diz onde esta o ultimo registro, para ninguem achar que o relatorio quebrou.
+    private string TextoSemResultados(bool periodoVazio)
+    {
+        const string padrao = "Nenhuma movimentação encontrada no período.";
+        if (!periodoVazio || _relatorioService.DataDaUltimaMovimentacao() is not { } ultima) return padrao;
+
+        return $"{padrao} A última movimentação registrada é de {ultima:MMMM 'de' yyyy}; use \"Anterior\" para chegar até lá.";
     }
 
     // ---- PDF ----

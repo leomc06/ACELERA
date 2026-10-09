@@ -11,7 +11,7 @@ public partial class EstoquePage : ContentPage
 
 	private static readonly (SituacaoEstoque Valor, string Texto)[] Situacoes =
 	[
-		(SituacaoEstoque.Todos, "Todas as situações"),
+		(SituacaoEstoque.Todos, "Todos"),
 		(SituacaoEstoque.SemEstoque, "Sem estoque"),
 		(SituacaoEstoque.Critico, "Estoque crítico"),
 		(SituacaoEstoque.AbaixoDoMinimo, "Abaixo do mínimo"),
@@ -24,6 +24,7 @@ public partial class EstoquePage : ContentPage
 	private readonly IServiceProvider _serviceProvider;
 	private readonly AvisoService _avisoService;
 	private bool _carregandoFiltros;
+	private SituacaoEstoque _situacaoAtual = SituacaoEstoque.Todos;
 
 	public EstoquePage(EstoqueService estoqueService, UsuarioService usuarioService, IServiceProvider serviceProvider, AvisoService avisoService)
 	{
@@ -42,7 +43,7 @@ public partial class EstoquePage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		AtualizarOpcoesDeSituacao();
+		DesenharChipsDeSituacao();
 		CarregarProdutos();
 		PreencherUsuarioLogado();
 		AvisoBannerControl.Mostrar(_avisoService.Consumir());
@@ -55,25 +56,50 @@ public partial class EstoquePage : ContentPage
 		CabecalhoControl.Atualizar(usuario);
 	}
 
-	// Mostra quantos produtos ha em cada situacao de alerta; a selecao atual e mantida.
-	private void AtualizarOpcoesDeSituacao()
+	// Usado pelo Painel: abre o Estoque ja filtrado por uma situacao.
+	public void AplicarSituacao(SituacaoEstoque situacao)
 	{
-		var selecionada = Math.Max(SituacaoFiltroPicker.SelectedIndex, 0);
-
+		_situacaoAtual = situacao;
+		PesquisaEntry.Text = string.Empty;
 		_carregandoFiltros = true;
-		SituacaoFiltroPicker.ItemsSource = Situacoes
-			.Select(s => s.Valor == SituacaoEstoque.Todos ? s.Texto : $"{s.Texto} ({_estoqueService.Contar(s.Valor)})")
-			.ToList();
-		SituacaoFiltroPicker.SelectedIndex = selecionada;
+		CategoriaFiltroPicker.SelectedIndex = 0;
 		_carregandoFiltros = false;
+		DesenharChipsDeSituacao();
+		CarregarProdutos();
 	}
+
+	// Um botao por situacao, com quantos produtos ha em cada uma; o escolhido fica destacado.
+	private void DesenharChipsDeSituacao()
+	{
+		SituacaoChipsLayout.Children.Clear();
+		foreach (var (valor, texto) in Situacoes)
+		{
+			var quantidade = _estoqueService.Contar(valor);
+			var escolhido = valor == _situacaoAtual;
+			var chip = new Button
+			{
+				Text = $"{texto} ({quantidade})",
+				Style = escolhido ? Estilo("ChipEscolhido") : Estilo("Chip"),
+				Margin = new Thickness(3)
+			};
+			SemanticProperties.SetDescription(chip, $"Filtrar por situação: {texto}, {quantidade} produtos");
+			chip.Clicked += (_, _) =>
+			{
+				_situacaoAtual = valor;
+				DesenharChipsDeSituacao();
+				CarregarProdutos();
+			};
+			SituacaoChipsLayout.Children.Add(chip);
+		}
+	}
+
+	private static Style Estilo(string chave) => (Style)Application.Current!.Resources[chave];
 
 	private void CarregarProdutos()
 	{
 		var categoria = Categorias[Math.Max(CategoriaFiltroPicker.SelectedIndex, 0)].Valor;
-		var situacao = Situacoes[Math.Max(SituacaoFiltroPicker.SelectedIndex, 0)].Valor;
 
-		var produtos = _estoqueService.Filtrar(PesquisaEntry.Text, categoria, situacao);
+		var produtos = _estoqueService.Filtrar(PesquisaEntry.Text, categoria, _situacaoAtual);
 
 		ProdutosCollectionView.ItemsSource = produtos
 			.Select(p => new ProdutoEstoqueItem { Produto = p })
@@ -108,13 +134,13 @@ public partial class EstoquePage : ContentPage
 		await Navigation.PushAsync(pagina);
 	}
 
+	// Os dois perfis veem a ficha do produto (consulta); as acoes administrativas ficam escondidas para o Veterinario.
 	private async void OnProdutoTapped(object? sender, TappedEventArgs e)
 	{
 		if (sender is not Border border || border.BindingContext is not ProdutoEstoqueItem item) return;
-		if (_usuarioService.UsuarioLogado?.Perfil != Perfil.Administrativo) return;
 
-		var pagina = _serviceProvider.GetRequiredService<CadastrarProdutoPage>();
-		pagina.CarregarParaEdicao(item.Produto.Id);
+		var pagina = _serviceProvider.GetRequiredService<ProdutoDetalhePage>();
+		pagina.Carregar(item.Produto.Id);
 		await Navigation.PushAsync(pagina);
 	}
 

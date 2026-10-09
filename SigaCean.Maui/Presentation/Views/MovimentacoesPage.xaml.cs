@@ -13,6 +13,10 @@ public partial class MovimentacoesPage : ContentPage
     private List<MovimentacaoHistoricoItem> _todosOsItens = new();
     private bool _carregandoFiltros;
 
+    // Desenhar centenas de linhas de uma vez deixa a tela lenta; mostra-se um bloco e "Mostrar mais" traz o proximo.
+    private const int TamanhoDoBloco = 100;
+    private int _limiteExibido = TamanhoDoBloco;
+
     private static readonly (TipoMovimentacao? Valor, string Texto)[] Tipos =
     [
         (null, "Todos os tipos"),
@@ -83,6 +87,7 @@ public partial class MovimentacoesPage : ContentPage
         var tipo = Tipos[Math.Max(TipoFiltroPicker.SelectedIndex, 0)].Valor;
         var status = Situacoes[Math.Max(StatusFiltroPicker.SelectedIndex, 0)].Valor;
 
+        _limiteExibido = TamanhoDoBloco;
         _todosOsItens = _movimentacaoService.ObterHistorico(null, inicio, fim, tipo, status)
             .Select(m => new MovimentacaoHistoricoItem { Movimentacao = m })
             .ToList();
@@ -90,7 +95,17 @@ public partial class MovimentacoesPage : ContentPage
         AplicarPesquisa();
     }
 
-    private void OnPesquisaTextChanged(object? sender, TextChangedEventArgs e) => AplicarPesquisa();
+    private void OnPesquisaTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        _limiteExibido = TamanhoDoBloco;
+        AplicarPesquisa();
+    }
+
+    private void OnMostrarMaisClicked(object? sender, EventArgs e)
+    {
+        _limiteExibido += TamanhoDoBloco;
+        AplicarPesquisa();
+    }
 
     // Usa o texto que esta no campo, tambem ao recarregar a lista (ao voltar de outra tela), para os dois nao divergirem.
     private void AplicarPesquisa()
@@ -102,8 +117,16 @@ public partial class MovimentacoesPage : ContentPage
                 BuscaTexto.Contem(i.ProdutoNome, termo) ||
                 BuscaTexto.Contem(i.DetalheTexto, termo)).ToList(); // tambem acha por retirante, documento, destino
 
-        MovimentacoesCollectionView.ItemsSource = itens;
-        ResultadoLabel.Text = itens.Count == 1 ? "1 movimentação encontrada." : $"{itens.Count} movimentações encontradas.";
+        MovimentacoesCollectionView.ItemsSource = itens.Take(_limiteExibido).ToList();
+        MostrarMaisButton.IsVisible = itens.Count > _limiteExibido;
+        MostrarMaisButton.Text = $"Mostrar mais ({itens.Count - _limiteExibido} restantes)";
+
+        ResultadoLabel.Text = itens.Count switch
+        {
+            1 => "1 movimentação encontrada.",
+            _ when itens.Count > _limiteExibido => $"{itens.Count} movimentações encontradas — mostrando as {_limiteExibido} mais recentes.",
+            _ => $"{itens.Count} movimentações encontradas."
+        };
     }
 
     // ---- Filtros de tipo, situacao e periodo ----

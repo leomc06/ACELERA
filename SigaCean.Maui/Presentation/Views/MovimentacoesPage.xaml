@@ -13,21 +13,20 @@
 
             <views:AvisoBanner x:Name="AvisoBannerControl" />
 
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Label Text="Movimentações" Style="{StaticResource PageTitle}" />
-                    <Label Text="Histórico de entradas e saídas." Style="{StaticResource PageSubtitle}" />
-                </VerticalStackLayout>
-                <FlexLayout x:Name="AcoesAdministrativoLayout" Grid.Column="1" JustifyContent="End" Wrap="Wrap" AlignItems="Start">
-                    <Button Text="＋ Entrada" Style="{StaticResource GreenButton}" Clicked="OnEntradaClicked" Margin="4" />
-                    <Button Text="− Saída" Style="{StaticResource OrangeButton}" Clicked="OnSaidaClicked" Margin="4" />
-                </FlexLayout>
-            </Grid>
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Movimentações" Style="{StaticResource PageTitle}" />
+                <Label Text="Histórico de entradas, saídas e ajustes de balanço." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <FlexLayout x:Name="AcoesAdministrativoLayout" JustifyContent="Start" Wrap="Wrap" AlignItems="Start" Margin="-4,-8,0,0">
+                <Button Text="＋ Entrada" Style="{StaticResource GreenButton}" Clicked="OnEntradaClicked" Margin="4" />
+                <Button Text="− Saída" Style="{StaticResource OrangeButton}" Clicked="OnSaidaClicked" Margin="4" />
+            </FlexLayout>
 
             <Border Padding="16">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="Histórico" Style="{StaticResource CardTitle}" />
-                    <Entry x:Name="PesquisaEntry" Placeholder="Pesquisar por produto, retirante, destino ou documento..." TextChanged="OnPesquisaTextChanged" />
+                    <Entry x:Name="PesquisaEntry" Placeholder="Pesquisar por produto, retirante, destino ou documento..." SemanticProperties.Description="Pesquisar no histórico" TextChanged="OnPesquisaTextChanged" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="4">
                         <Label Grid.Row="0" Grid.Column="0" Text="Tipo" Style="{StaticResource FieldLabel}" />
@@ -37,8 +36,8 @@
                     </Grid>
 
                     <HorizontalStackLayout Spacing="8">
-                        <Switch x:Name="FiltrarPeriodoSwitch" Toggled="OnFiltrarPeriodoToggled" />
                         <Label Text="Filtrar por período" VerticalOptions="Center" />
+                        <Switch x:Name="FiltrarPeriodoSwitch" Toggled="OnFiltrarPeriodoToggled" SemanticProperties.Description="Filtrar por período" />
                     </HorizontalStackLayout>
                     <Grid x:Name="PeriodoLayout" IsVisible="False" ColumnDefinitions="*,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="4">
                         <Label Grid.Row="0" Grid.Column="0" Text="De" Style="{StaticResource FieldLabel}" />
@@ -71,9 +70,9 @@
                                             </HorizontalStackLayout>
                                             <Label Text="{Binding DetalheTexto}" Style="{StaticResource MutedLabel}" />
                                             <HorizontalStackLayout Spacing="8">
-                                                <Label Text="{Binding DataFormatada}" FontSize="11" TextColor="{StaticResource Muted}" />
-                                                <Label Text="{Binding UsuarioTexto, StringFormat='resp.: {0}'}" FontSize="11" TextColor="{StaticResource Muted}" />
-                                                <Label Text="{Binding StatusTexto}" FontSize="11" TextColor="{StaticResource Red}" FontAttributes="Bold" IsVisible="{Binding MostrarStatusEspecial}" />
+                                                <Label Text="{Binding DataFormatada}" FontSize="12" TextColor="{StaticResource Muted}" />
+                                                <Label Text="{Binding UsuarioTexto, StringFormat='resp.: {0}'}" FontSize="12" TextColor="{StaticResource Muted}" />
+                                                <Label Text="{Binding StatusTexto}" FontSize="12" TextColor="{StaticResource Red}" FontAttributes="Bold" IsVisible="{Binding MostrarStatusEspecial}" />
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
 
@@ -84,6 +83,8 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+
+                    <Button x:Name="MostrarMaisButton" Text="Mostrar mais" Clicked="OnMostrarMaisClicked" IsVisible="False" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Border>
 

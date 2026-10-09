@@ -15,6 +15,17 @@ public partial class LoginPage : ContentPage
 		_serviceProvider = serviceProvider;
 	}
 
+	// Enter no usuario passa para a senha; Enter na senha entra.
+	private void OnLoginCompleted(object? sender, EventArgs e) => SenhaEntry.Focus();
+
+	private void OnMostrarSenhaChanged(object? sender, CheckedChangedEventArgs e) => SenhaEntry.IsPassword = !e.Value;
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		LoginEntry.Focus();
+	}
+
 	private void OnEntrarClicked(object? sender, EventArgs e)
 	{
 		var usuario = _usuarioService.Login(LoginEntry.Text ?? string.Empty, SenhaEntry.Text ?? string.Empty);

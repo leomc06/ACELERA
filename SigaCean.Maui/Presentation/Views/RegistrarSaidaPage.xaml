@@ -35,7 +35,8 @@
                                 <Label Text="Quantidade" Style="{StaticResource FieldLabel}" />
                                 <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
                             </HorizontalStackLayout>
-                            <Entry x:Name="QuantidadeEntry" Keyboard="Numeric" Placeholder="Ex.: 5" />
+                            <Entry x:Name="QuantidadeEntry" Keyboard="Numeric" Placeholder="Ex.: 5" SemanticProperties.Description="Quantidade a retirar" TextChanged="OnQuantidadeChanged" />
+                            <Label x:Name="PrevisaoLabel" Style="{StaticResource MutedLabel}" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="6">
@@ -43,7 +44,7 @@
                                 <Label Text="Destino" Style="{StaticResource FieldLabel}" />
                                 <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
                             </HorizontalStackLayout>
-                            <Entry x:Name="DestinoEntry" Placeholder="Ex.: CEAN; Canil" />
+                            <Entry x:Name="DestinoEntry" Placeholder="Ex.: CEAN; Canil" SemanticProperties.Description="Destino da saída" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
@@ -51,7 +52,7 @@
                                 <Label Text="Retirado por" Style="{StaticResource FieldLabel}" />
                                 <Label Text="*" TextColor="{StaticResource Red}" FontAttributes="Bold" />
                             </HorizontalStackLayout>
-                            <Entry x:Name="RetiradoPorEntry" Placeholder="Nome de quem levou o produto" />
+                            <Entry x:Name="RetiradoPorEntry" Placeholder="Nome de quem levou o produto" SemanticProperties.Description="Quem está retirando o produto" Completed="OnCompleted" />
                         </VerticalStackLayout>
 
                     </Grid>

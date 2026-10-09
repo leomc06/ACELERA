@@ -44,7 +44,7 @@
 
                         <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
                             <Label Text="Estoque mínimo" Style="{StaticResource FieldLabel}" />
-                            <Entry x:Name="EstoqueMinimoEntry" Keyboard="Numeric" Placeholder="Ex.: 50 (opcional)" />
+                            <Entry x:Name="EstoqueMinimoEntry" Keyboard="Numeric" Placeholder="Ex.: 50 (opcional)" SemanticProperties.Description="Estoque mínimo do produto" Completed="OnCompleted" />
                         </VerticalStackLayout>
 
                     </Grid>

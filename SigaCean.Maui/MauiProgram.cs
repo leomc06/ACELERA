@@ -42,6 +42,19 @@ public static class MauiProgram
 			handler.PlatformView.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0xB5, 0xD3, 0xD0));
 			handler.PlatformView.CornerRadius = new Microsoft.UI.Xaml.CornerRadius(8);
 		});
+
+		// Campos de texto com a mesma borda arredondada dos seletores (o padrao do Windows nao mostra a caixa do campo).
+		static void EstilizarCampo(Microsoft.UI.Xaml.Controls.TextBox campo)
+		{
+			campo.BorderThickness = new Microsoft.UI.Xaml.Thickness(1);
+			campo.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0xB5, 0xD3, 0xD0));
+			campo.CornerRadius = new Microsoft.UI.Xaml.CornerRadius(8);
+			campo.MinHeight = 44;
+			campo.VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+		}
+
+		Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("BordaDoCampo", (handler, _) => EstilizarCampo(handler.PlatformView));
+		Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("BordaDoCampo", (handler, _) => EstilizarCampo(handler.PlatformView));
 #endif
 
 #if DEBUG
@@ -58,6 +71,7 @@ public static class MauiProgram
 
 		builder.Services.AddTransient<AppShell>();
 		builder.Services.AddTransient<LoginPage>();
+		builder.Services.AddTransient<PainelPage>();
 		builder.Services.AddTransient<EstoquePage>();
 		builder.Services.AddTransient<RegistrarEntradaPage>();
 		builder.Services.AddTransient<RegistrarSaidaPage>();
@@ -66,6 +80,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<AjusteBalancoPage>();
 		builder.Services.AddTransient<RelatorioConsumoPage>();
 		builder.Services.AddTransient<CorrigirCancelarMovimentacaoPage>();
+		builder.Services.AddTransient<ProdutoDetalhePage>();
 
 		return builder.Build();
 	}

@@ -10,6 +10,7 @@ public class ProdutoService(DataStore dataStore)
     public Produto Cadastrar(string nome, CategoriaProduto categoria, string? apresentacaoEspecificacao, int? estoqueMinimo)
     {
         ValidarDados(nome, estoqueMinimo);
+        ValidarSemDuplicidade(nome, apresentacaoEspecificacao, null);
 
         var produto = new Produto
         {
@@ -25,6 +26,7 @@ public class ProdutoService(DataStore dataStore)
     public void Alterar(Guid produtoId, string nome, CategoriaProduto categoria, string? apresentacaoEspecificacao, int? estoqueMinimo)
     {
         ValidarDados(nome, estoqueMinimo);
+        ValidarSemDuplicidade(nome, apresentacaoEspecificacao, produtoId);
 
         var produto = ObterPorId(produtoId);
         produto.Nome = nome.Trim();
@@ -41,10 +43,25 @@ public class ProdutoService(DataStore dataStore)
             throw new InvalidOperationException("O estoque mínimo não pode ser negativo.");
     }
 
+    // Produto identico = mesmo nome e mesma apresentacao (sem diferenciar maiusculas). O service recusa esse caso; nomes
+    // apenas PARECIDOS (pontuacao diferente) continuam permitidos: a tela avisa e deixa o usuario decidir (ObterPorNomeSemelhante).
+    public bool ExisteIdentico(string nome, string? apresentacao, Guid? ignorarId = null) =>
+        dataStore.Produtos.Any(p =>
+            p.Id != ignorarId &&
+            string.Equals(p.Nome.Trim(), nome.Trim(), StringComparison.CurrentCultureIgnoreCase) &&
+            string.Equals(LimparTexto(p.ApresentacaoEspecificacao) ?? "", LimparTexto(apresentacao) ?? "", StringComparison.CurrentCultureIgnoreCase));
+
+    private void ValidarSemDuplicidade(string nome, string? apresentacao, Guid? ignorarId)
+    {
+        if (ExisteIdentico(nome, apresentacao, ignorarId))
+            throw new InvalidOperationException($"Já existe um produto \"{nome.Trim()}\" com a mesma apresentação.");
+    }
+
     private static string? LimparTexto(string? texto) => string.IsNullOrWhiteSpace(texto) ? null : texto.Trim();
 
     public Produto ObterPorId(Guid produtoId) =>
-        dataStore.Produtos.First(p => p.Id == produtoId);
+        dataStore.Produtos.FirstOrDefault(p => p.Id == produtoId)
+            ?? throw new InvalidOperationException("Produto não encontrado.");
 
     // Mitiga duplicidade de nomenclatura por pontuação/espaçamento (ex.: planilha real do CEAN
     // tinha "...INJETÁVEL, AMPOLA" e "...INJETÁVEL - AMPOLA" como produtos distintos).

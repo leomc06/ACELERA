@@ -44,28 +44,41 @@ public class Produto
     public bool TemValidadeProxima(DateOnly hoje, int diasAlerta) =>
         !TemLoteVencido(hoje) && TemLoteProximoDoVencimento(hoje, diasAlerta);
 
-    // Consome quantidade pelas regras FEFO (first-expire, first-out): o que vence primeiro sai primeiro, e o estoque
-    // sem validade conhecida e tratado como "vence por ultimo" para nao mascarar o que tem data real.
-    public IReadOnlyList<LoteConsumido> ConsumirQuantidade(int quantidade)
+    // Unico lugar com a regra FEFO (first-expire, first-out): o que vence primeiro sai primeiro, e o estoque sem
+    // validade conhecida e tratado como "vence por ultimo" para nao mascarar o que tem data real.
+    // Nao altera nada: so diz de quais validades a quantidade sairia.
+    public IReadOnlyList<LoteConsumido> PrevisaoFefo(int quantidade)
     {
         if (quantidade > QuantidadeAtual)
-            throw new InvalidOperationException($"Quantidade solicitada ({quantidade}) maior que a disponivel ({QuantidadeAtual}) para '{Nome}'.");
+            throw new InvalidOperationException($"Quantidade solicitada ({quantidade}) maior que a disponível ({QuantidadeAtual}) para {Nome}.");
 
-        var consumidos = new List<LoteConsumido>();
+        var previsao = new List<LoteConsumido>();
         var restante = quantidade;
-        foreach (var lote in Lotes.OrderBy(l => l.DataValidade ?? DateOnly.MaxValue))
+        foreach (var lote in Lotes.Where(l => l.Quantidade > 0).OrderBy(l => l.DataValidade ?? DateOnly.MaxValue))
         {
             if (restante <= 0) break;
-            var consumidoDoLote = Math.Min(lote.Quantidade, restante);
-            if (consumidoDoLote > 0)
-                consumidos.Add(new LoteConsumido(lote.DataValidade, consumidoDoLote));
-            lote.Quantidade -= consumidoDoLote;
-            restante -= consumidoDoLote;
+            var daqui = Math.Min(lote.Quantidade, restante);
+            previsao.Add(new LoteConsumido(lote.DataValidade, daqui));
+            restante -= daqui;
         }
+
+        return previsao;
+    }
+
+    // Consome a quantidade seguindo a previsao FEFO e devolve o que saiu de cada validade.
+    public IReadOnlyList<LoteConsumido> ConsumirQuantidade(int quantidade)
+    {
+        var consumidos = PrevisaoFefo(quantidade);
+        foreach (var parcela in consumidos)
+            Lotes.First(l => l.DataValidade == parcela.DataValidade).Quantidade -= parcela.Quantidade;
 
         Lotes.RemoveAll(l => l.Quantidade == 0);
         return consumidos;
     }
+
+    // Validade mais proxima entre o que ainda existe em estoque (nulo se nada tem validade informada).
+    public DateOnly? ProximaValidade =>
+        Lotes.Where(l => l.Quantidade > 0 && l.DataValidade is not null).Min(l => l.DataValidade);
 
     // Desfaz uma entrada: retira a quantidade do estoque que tem aquela validade. Falha se esse estoque ja foi usado.
     public void RemoverDoLote(DateOnly? dataValidade, int quantidade)
@@ -74,7 +87,7 @@ public class Produto
 
         if (lote is null)
             throw new InvalidOperationException(
-                $"Nao e possivel desfazer: parte das {quantidade} unidades de '{Nome}' dessa entrada ja foi utilizada.");
+                $"Não é possível desfazer: parte das {quantidade} unidades de '{Nome}' dessa entrada já foi utilizada.");
 
         lote.Quantidade -= quantidade;
         Lotes.RemoveAll(l => l.Quantidade == 0);

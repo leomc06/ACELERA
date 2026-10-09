@@ -144,8 +144,8 @@ public static class DadosCean
         ("MICROCHIP", 400),
     ];
 
-    // A planilha nao informa categoria: todo item entra como Medicamento, menos estes, que o CEAN pediu para separar.
-    // (Teste de cinomose, pomada e suplementos continuam como Medicamento, por decisao do CEAN.)
+    // A planilha nao informa categoria: todo item entra como Medicamento, menos estes, que a equipe decidiu separar.
+    // (Teste de cinomose, pomada e suplementos continuam como Medicamento, por decisao da equipe.)
     public static readonly Dictionary<string, Domain.CategoriaProduto> CategoriaDiferenteDeMedicamento = new()
     {
         ["MICROCHIP"] = Domain.CategoriaProduto.Microchip,

@@ -56,7 +56,7 @@ public class RegrasDeEstoqueTests
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Compra, null, null, null, null);
 
-        var saida = _movimentacoes.RegistrarSaida(p, 8, "Canil", null);
+        var saida = _movimentacoes.RegistrarSaida(p, 8, "Canil", null, "Teste");
 
         Assert.Equal(12, p.QuantidadeAtual);
         Assert.Equal("Canil", saida.Destino);
@@ -69,7 +69,7 @@ public class RegrasDeEstoqueTests
         _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, null, null);
         var movimentacoesAntes = _dataStore.Movimentacoes.Count;
 
-        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, 6, "Canil", null));
+        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, 6, "Canil", null, "Teste"));
 
         Assert.Equal(5, p.QuantidadeAtual);
         Assert.Equal(movimentacoesAntes, _dataStore.Movimentacoes.Count);
@@ -81,7 +81,7 @@ public class RegrasDeEstoqueTests
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, null, null);
 
-        _movimentacoes.RegistrarSaida(p, 5, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 5, "Canil", null, "Teste");
 
         Assert.Equal(0, p.QuantidadeAtual);
     }
@@ -95,7 +95,7 @@ public class RegrasDeEstoqueTests
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(90), null);
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(10), null);
 
-        _movimentacoes.RegistrarSaida(p, 6, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 6, "Canil", null, "Teste");
 
         Assert.Equal(4, p.Lotes.Single(l => l.DataValidade == Hoje.AddDays(10)).Quantidade);
         Assert.Equal(10, p.Lotes.Single(l => l.DataValidade == Hoje.AddDays(90)).Quantidade);
@@ -108,7 +108,7 @@ public class RegrasDeEstoqueTests
         _movimentacoes.RegistrarEntrada(p, 4, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(10), null);
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(90), null);
 
-        _movimentacoes.RegistrarSaida(p, 7, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 7, "Canil", null, "Teste");
 
         Assert.DoesNotContain(p.Lotes, l => l.DataValidade == Hoje.AddDays(10));
         Assert.Equal(7, p.Lotes.Single(l => l.DataValidade == Hoje.AddDays(90)).Quantidade);
@@ -121,7 +121,7 @@ public class RegrasDeEstoqueTests
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(30), null);
 
-        _movimentacoes.RegistrarSaida(p, 10, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 10, "Canil", null, "Teste");
 
         Assert.DoesNotContain(p.Lotes, l => l.DataValidade == Hoje.AddDays(30));
         Assert.Equal(10, p.Lotes.Single(l => l.DataValidade == null).Quantidade);
@@ -360,7 +360,7 @@ public class RegrasDeEstoqueTests
         var b = NovoProduto("B");
         _movimentacoes.RegistrarEntrada(a, 5, TipoOrigemEntrada.Compra, null, null, null, null);
         _movimentacoes.RegistrarEntrada(b, 5, TipoOrigemEntrada.Compra, null, null, null, null);
-        _movimentacoes.RegistrarSaida(a, 1, "Canil", null);
+        _movimentacoes.RegistrarSaida(a, 1, "Canil", null, "Teste");
 
         var todos = _movimentacoes.ObterHistorico();
         var soA = _movimentacoes.ObterHistorico(produto: a);
@@ -391,8 +391,8 @@ public class RegrasDeEstoqueTests
         var a = NovoProduto("A");
         var b = NovoProduto("B");
         _movimentacoes.RegistrarEntrada(a, 20, TipoOrigemEntrada.Compra, null, null, null, null);
-        _movimentacoes.RegistrarSaida(a, 5, "Canil", null);
-        _movimentacoes.RegistrarSaida(a, 3, "Gatil", null);
+        _movimentacoes.RegistrarSaida(a, 5, "Canil", null, "Teste");
+        _movimentacoes.RegistrarSaida(a, 3, "Gatil", null, "Teste");
         _movimentacoes.RegistrarAjusteBalanco(a, 10, null); // 12 -> 10 = -2
         _movimentacoes.RegistrarEntrada(b, 4, TipoOrigemEntrada.Doacao, null, null, null, null);
 

@@ -54,7 +54,7 @@ public class ReversaoDeMovimentacaoTests
     {
         var p = NovoProduto();
         var entrada = _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
-        _movimentacoes.RegistrarSaida(p, 7, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 7, "Canil", null, "Teste");
 
         Assert.Throws<InvalidOperationException>(() => _movimentacoes.Cancelar(entrada.Id, "Engano"));
 
@@ -84,7 +84,7 @@ public class ReversaoDeMovimentacaoTests
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(10), null);
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(90), null);
-        var saida = _movimentacoes.RegistrarSaida(p, 14, "Canil", null); // 10 de CEDO + 4 de TARDE
+        var saida = _movimentacoes.RegistrarSaida(p, 14, "Canil", null, "Teste"); // 10 de CEDO + 4 de TARDE
 
         _movimentacoes.Cancelar(saida.Id, "Destino errado");
 
@@ -100,7 +100,7 @@ public class ReversaoDeMovimentacaoTests
     {
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(15), null);
-        var saida = _movimentacoes.RegistrarSaida(p, 5, "Canil", null);
+        var saida = _movimentacoes.RegistrarSaida(p, 5, "Canil", null, "Teste");
         Assert.Empty(p.Lotes);
 
         _movimentacoes.Cancelar(saida.Id, "Engano");
@@ -115,7 +115,7 @@ public class ReversaoDeMovimentacaoTests
     {
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
-        var saida = _movimentacoes.RegistrarSaida(p, 4, "Canil", null);
+        var saida = _movimentacoes.RegistrarSaida(p, 4, "Canil", null, "Teste");
 
         _movimentacoes.Corrigir(saida.Id, "Quantidade errada");
 
@@ -169,7 +169,7 @@ public class ReversaoDeMovimentacaoTests
     {
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
-        var saida = _movimentacoes.RegistrarSaida(p, 4, "Canil", null);
+        var saida = _movimentacoes.RegistrarSaida(p, 4, "Canil", null, "Teste");
         _movimentacoes.Cancelar(saida.Id, "Engano");
 
         Assert.Throws<InvalidOperationException>(() => _movimentacoes.Cancelar(saida.Id, "De novo"));
@@ -186,9 +186,9 @@ public class ReversaoDeMovimentacaoTests
         var relatorio = new RelatorioService(_dataStore);
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Compra, null, null, null, null);
-        var saidaCancelada = _movimentacoes.RegistrarSaida(p, 5, "Canil", null);
-        var saidaCorrigida = _movimentacoes.RegistrarSaida(p, 3, "Gatil", null);
-        _movimentacoes.RegistrarSaida(p, 2, "Canil", null);
+        var saidaCancelada = _movimentacoes.RegistrarSaida(p, 5, "Canil", null, "Teste");
+        var saidaCorrigida = _movimentacoes.RegistrarSaida(p, 3, "Gatil", null, "Teste");
+        _movimentacoes.RegistrarSaida(p, 2, "Canil", null, "Teste");
         _movimentacoes.Cancelar(saidaCancelada.Id, "Engano");
         _movimentacoes.Corrigir(saidaCorrigida.Id, "Quantidade errada");
 

@@ -29,11 +29,13 @@ public class MovimentacaoService(DataStore dataStore)
         return entrada;
     }
 
-    public SaidaEstoque RegistrarSaida(Produto produto, int quantidade, string destino, Usuario? responsavel, string? retiradoPor = null)
+    public SaidaEstoque RegistrarSaida(Produto produto, int quantidade, string destino, Usuario? responsavel, string retiradoPor)
     {
         ValidarMovimentacao(produto, quantidade);
         if (string.IsNullOrWhiteSpace(destino))
             throw new InvalidOperationException("Informe o destino da saída.");
+        if (string.IsNullOrWhiteSpace(retiradoPor))
+            throw new InvalidOperationException("Informe quem está retirando o produto.");
 
         var consumidos = produto.ConsumirQuantidade(quantidade); // FEFO: sai primeiro o que vence mais cedo
 
@@ -42,7 +44,7 @@ public class MovimentacaoService(DataStore dataStore)
             Produto = produto,
             Quantidade = quantidade,
             Destino = destino.Trim(),
-            RetiradoPor = retiradoPor,
+            RetiradoPor = retiradoPor.Trim(),
             UsuarioResponsavel = responsavel
         };
         saida.LotesConsumidos.AddRange(consumidos);
@@ -79,6 +81,13 @@ public class MovimentacaoService(DataStore dataStore)
         return ajuste;
     }
 
+    // Mostra, sem alterar nada, de quais validades uma saida retiraria a quantidade (FEFO). Usa as mesmas regras da saida.
+    public IReadOnlyList<LoteConsumido> PrevisaoDeSaida(Produto produto, int quantidade)
+    {
+        ValidarMovimentacao(produto, quantidade);
+        return produto.PrevisaoFefo(quantidade);
+    }
+
     // Regras comuns de entrada e saida: o servico recusa sozinho o que a tela deixaria passar, sem alterar nada.
     private static void ValidarMovimentacao(Produto produto, int quantidade)
     {
@@ -100,10 +109,11 @@ public class MovimentacaoService(DataStore dataStore)
         if (string.IsNullOrWhiteSpace(motivo))
             throw new InvalidOperationException("Informe o motivo antes de continuar.");
 
-        var movimentacao = dataStore.Movimentacoes.First(m => m.Id == movimentacaoId);
+        var movimentacao = dataStore.Movimentacoes.FirstOrDefault(m => m.Id == movimentacaoId)
+            ?? throw new InvalidOperationException("Movimentação não encontrada.");
 
         if (movimentacao.Status != StatusMovimentacao.Ativa)
-            throw new InvalidOperationException("Somente movimentacoes ativas podem ser corrigidas ou canceladas.");
+            throw new InvalidOperationException("Somente movimentações ativas podem ser corrigidas ou canceladas.");
 
         ReverterEfeitoNoEstoque(movimentacao); // pode falhar (estoque da entrada ja usado): nada muda nesse caso
 

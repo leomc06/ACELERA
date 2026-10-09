@@ -51,7 +51,7 @@ public class AuditoriaTests
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
-        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, quantidade, "Canil", null));
+        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, quantidade, "Canil", null, "Teste"));
 
         Assert.Equal(10, p.QuantidadeAtual);
         Assert.Single(_dataStore.Movimentacoes);
@@ -63,7 +63,7 @@ public class AuditoriaTests
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, null, null);
 
-        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, 2, "  ", null));
+        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, 2, "  ", null, "Teste"));
 
         Assert.Equal(10, p.QuantidadeAtual);
         Assert.Single(_dataStore.Movimentacoes);
@@ -92,7 +92,7 @@ public class AuditoriaTests
 
         Assert.Throws<InvalidOperationException>(() =>
             _movimentacoes.RegistrarEntrada(p, 1, TipoOrigemEntrada.Compra, null, null, null, null));
-        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, 1, "Canil", null));
+        Assert.Throws<InvalidOperationException>(() => _movimentacoes.RegistrarSaida(p, 1, "Canil", null, "Teste"));
 
         Assert.Equal(10, p.QuantidadeAtual);
     }
@@ -105,7 +105,7 @@ public class AuditoriaTests
         var p = NovoProduto();
         var passado = Hoje.AddDays(-10);
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, passado, null);
-        _movimentacoes.RegistrarSaida(p, 10, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 10, "Canil", null, "Teste");
 
         Assert.Equal(0, p.QuantidadeAtual);
         Assert.False(p.TemLoteVencido(Hoje));
@@ -117,7 +117,7 @@ public class AuditoriaTests
     {
         var p = NovoProduto();
         _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, Hoje.AddDays(5), null);
-        _movimentacoes.RegistrarSaida(p, 10, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 10, "Canil", null, "Teste");
 
         Assert.False(p.TemLoteProximoDoVencimento(Hoje, EstoqueService.DiasAlertaValidade));
     }
@@ -193,7 +193,7 @@ public class AuditoriaTests
         _movimentacoes.RegistrarEntrada(p, 4, TipoOrigemEntrada.Compra, null, null, null, null);
         Assert.DoesNotContain(p, _estoque.Filtrar(null, null, SituacaoEstoque.SemEstoque));
 
-        _movimentacoes.RegistrarSaida(p, 4, "Canil", null);
+        _movimentacoes.RegistrarSaida(p, 4, "Canil", null, "Teste");
         Assert.Contains(p, _estoque.Filtrar(null, null, SituacaoEstoque.SemEstoque));
         Assert.Equal(1, _estoque.Contar(SituacaoEstoque.SemEstoque));
 
@@ -251,7 +251,7 @@ public class AuditoriaTests
         var validade = Hoje.AddDays(20);
         var primeira = _movimentacoes.RegistrarEntrada(p, 10, TipoOrigemEntrada.Compra, null, null, validade, null);
         var segunda = _movimentacoes.RegistrarEntrada(p, 5, TipoOrigemEntrada.Compra, null, null, validade, null);
-        _movimentacoes.RegistrarSaida(p, 8, "Canil", null); // sobram 7 dessa validade
+        _movimentacoes.RegistrarSaida(p, 8, "Canil", null, "Teste"); // sobram 7 dessa validade
 
         Assert.Throws<InvalidOperationException>(() => _movimentacoes.Cancelar(primeira.Id, "Engano"));
         Assert.Equal(7, p.QuantidadeAtual); // falhou sem alterar nada
@@ -365,7 +365,7 @@ public class AuditoriaTests
     {
         var p = NovoProduto();
         var entrada = _movimentacoes.RegistrarEntrada(p, 20, TipoOrigemEntrada.Compra, null, null, null, null);
-        var saida = _movimentacoes.RegistrarSaida(p, 5, "Canil", null);
+        var saida = _movimentacoes.RegistrarSaida(p, 5, "Canil", null, "Teste");
         var ajuste = _movimentacoes.RegistrarAjusteBalanco(p, 10, null);
         return (p, entrada, saida, ajuste);
     }
@@ -484,10 +484,10 @@ public class AuditoriaTests
         _movimentacoes.RegistrarEntrada(p, 11, TipoOrigemEntrada.Compra, null, null, null, null);
         Assert.False(p.EstaAbaixoDoMinimo);
 
-        _movimentacoes.RegistrarSaida(p, 1, "Canil", null); // 10 = minimo
+        _movimentacoes.RegistrarSaida(p, 1, "Canil", null, "Teste"); // 10 = minimo
         Assert.True(p.EstaAbaixoDoMinimo);
 
-        _movimentacoes.RegistrarSaida(p, 1, "Canil", null); // 9 < minimo
+        _movimentacoes.RegistrarSaida(p, 1, "Canil", null, "Teste"); // 9 < minimo
         Assert.True(p.EstaAbaixoDoMinimo);
     }
 }

@@ -42,6 +42,10 @@ public class RelatorioService(DataStore dataStore)
                 : itens.OrderBy(i => i.Produto.Nome))
             .ToList();
     }
+
+    // Data da movimentacao mais recente (qualquer status); a tela usa para orientar quando o periodo escolhido esta vazio.
+    public DateTime? DataDaUltimaMovimentacao() =>
+        dataStore.Movimentacoes.Count == 0 ? null : dataStore.Movimentacoes.Max(m => m.Data);
 }
 
 public class ItemRelatorioConsumo

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SigaCean.Presentation"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             xmlns:viewmodels="clr-namespace:SigaCean.Presentation.ViewModels"
+             x:Class="SigaCean.Presentation.Views.GraficosPage"
+             Title="Gráficos">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="16">
+
+            <views:CabecalhoView x:Name="CabecalhoControl" />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Gráficos" Style="{StaticResource PageTitle}" />
+                <Label Text="Como está o estoque por categoria e o que foi mais e menos usado dentro de cada uma." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <!-- O que mostrar, como mostrar e de que periodo -->
+            <Border Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="300,Auto" ColumnSpacing="14" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label Grid.Row="0" Grid.Column="0" Text="O que mostrar" Style="{StaticResource FieldLabel}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="Tipo de gráfico" Style="{StaticResource FieldLabel}" />
+                        <Picker Grid.Row="1" Grid.Column="0" x:Name="MetricaPicker" Title="O que mostrar" SelectedIndexChanged="OnMetricaChanged" />
+                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                            <Button x:Name="BarrasButton" Text="Barras" Style="{StaticResource ChipEscolhido}" Clicked="OnBarrasClicked" />
+                            <Button x:Name="PizzaButton" Text="Pizza" Style="{StaticResource Chip}" Clicked="OnPizzaClicked" />
+                            <Button x:Name="RoscaButton" Text="Rosca" Style="{StaticResource Chip}" Clicked="OnRoscaClicked" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <Label Text="Período do uso" Style="{StaticResource FieldLabel}" />
+                    <views:SeletorPeriodoView x:Name="SeletorPeriodo" PeriodoAlterado="OnPeriodoAlterado" />
+                    <Label x:Name="AvisoPeriodoLabel" Style="{StaticResource MutedLabel}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Grafico principal + legenda -->
+            <Border Padding="18">
+                <Grid ColumnDefinitions="*,270" ColumnSpacing="18" RowDefinitions="Auto,Auto">
+                    <Label x:Name="TituloGraficoLabel" Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource CardTitle}" Margin="0,0,0,8" />
+                    <GraphicsView x:Name="GraficoView" Grid.Row="1" Grid.Column="0" HeightRequest="340" />
+                    <VerticalStackLayout x:Name="LegendaLista" Grid.Row="1" Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LegendaItem">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <BoxView Grid.Column="0" WidthRequest="14" HeightRequest="14" CornerRadius="4" Color="{Binding Cor}" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{Binding Rotulo}" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
+                                        <Label Text="{Binding ValorTexto}" FontAttributes="Bold" HorizontalOptions="End" />
+                                        <Label Text="{Binding PercentualTexto}" Style="{StaticResource MutedLabel}" HorizontalOptions="End" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Mais e menos usado dentro de cada categoria -->
+            <Label Text="Mais e menos usado em cada categoria" Style="{StaticResource CardTitle}" Margin="0,8,0,0" />
+            <Label Text="Uso = saídas registradas no período escolhido. Entradas e ajustes de balanço não contam." Style="{StaticResource MutedLabel}" />
+
+            <VerticalStackLayout x:Name="CartoesLista" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:CategoriaCartao">
+                        <Border Padding="0">
+                            <Grid ColumnDefinitions="8,*">
+                                <BoxView Grid.Column="0" Color="{Binding Cor}" CornerRadius="0" />
+                                <VerticalStackLayout Grid.Column="1" Padding="16,12" Spacing="3">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" Text="{Binding Nome}" FontAttributes="Bold" FontSize="15" />
+                                        <Label Grid.Column="1" Text="{Binding ParticipacaoTexto}" IsVisible="{Binding MostrarParticipacao}" Style="{StaticResource MutedLabel}" VerticalOptions="Center" />
+                                    </Grid>
+                                    <Label Text="{Binding Resumo}" Style="{StaticResource MutedLabel}" />
+                                    <Label Text="{Binding MaisUsadoTexto}" />
+                                    <Label Text="{Binding MenosUsadoTexto}" IsVisible="{Binding MostrarMenosUsado}" />
+                                    <Label Text="{Binding SemSaidaTexto}" IsVisible="{Binding MostrarSemSaida}" Style="{StaticResource MutedLabel}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Produtos de uma categoria -->
+            <Label x:Name="TituloDetalheLabel" Style="{StaticResource CardTitle}" Margin="0,8,0,0" />
+            <Grid ColumnDefinitions="300,Auto" ColumnSpacing="14">
+                <Picker Grid.Column="0" x:Name="CategoriaPicker" Title="Escolha a categoria" SelectedIndexChanged="OnCategoriaChanged" />
+                <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                    <Button x:Name="MaisUsadosButton" Text="Mais usados" Style="{StaticResource ChipEscolhido}" Clicked="OnMaisUsadosClicked" />
+                    <Button x:Name="MenosUsadosButton" Text="Menos usados" Style="{StaticResource Chip}" Clicked="OnMenosUsadosClicked" />
+                </HorizontalStackLayout>
+            </Grid>
+            <Border Padding="18">
+                <GraphicsView x:Name="DetalheView" HeightRequest="120" />
+            </Border>
+            <Label x:Name="DetalheNotaLabel" Style="{StaticResource MutedLabel}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

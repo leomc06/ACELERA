@@ -34,6 +34,8 @@ public partial class AppShell : Shell
         if (usuarioService.UsuarioLogado?.Perfil == Perfil.Administrativo)
         {
             Items.Add(CriarItem("▥  Relatório", serviceProvider.GetRequiredService<RelatorioConsumoPage>()));
+            Items.Add(CriarItem("▤  Gráficos", serviceProvider.GetRequiredService<GraficosPage>()));
+            Items.Add(CriarItem("▦  Rel. por categoria", serviceProvider.GetRequiredService<RelatorioCategoriaPage>()));
         }
     }
 

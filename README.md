@@ -24,6 +24,9 @@ Os dados ficam **somente em memória**: ao fechar o programa, tudo volta ao esta
 - Histórico de movimentações, com busca por produto, retirante, destino ou documento e filtros por tipo,
   situação e período (mostra 100 por vez, com "Mostrar mais")
 - Relatório de Consumo mensal, trimestral, anual ou por período, com exportação em PDF
+- Gráficos por categoria (barras, pizza ou rosca): estoque atual, uso no período ou número de produtos, mais o
+  produto mais e o menos usado dentro de cada categoria (só o perfil Administrativo)
+- Relatório por Categoria, na tela e em PDF: uso de cada categoria e seus produtos mais e menos usados
 - Confirmação antes de gravar e faixa de aviso depois de cada operação
 - Controle de acesso por usuário, com botão Sair para trocar de usuário
 - Teclado: Enter envia os formulários e o login; no login há "Mostrar senha"
@@ -75,7 +78,7 @@ Usuários fictícios, criados só para demonstração:
 dotnet test SigaCean.Tests
 ```
 
-São 191 testes das regras de estoque, validade, estoque mínimo, movimentações (inclusive correção e
+São 214 testes das regras de estoque, validade, estoque mínimo, movimentações (inclusive correção e
 cancelamento), busca, histórico, relatório, PDF e login. Os Services também são testados sozinhos (a tela não é a única
 barreira): saída sem "retirado por", produto duplicado e ids inexistentes são recusados sem alterar nada.
 

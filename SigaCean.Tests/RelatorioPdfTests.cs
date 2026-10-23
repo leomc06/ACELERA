@@ -57,3 +57,59 @@ public class RelatorioPdfTests
         Assert.Equal(esperado, RelatorioConsumoPdf.NomeSugerido(tipo, DateTime.Parse(inicio), DateTime.Parse(fim)));
     }
 }
+
+// Segundo relatorio (por categoria): mesmos dados dos graficos, em PDF.
+public class RelatorioCategoriaPdfTests
+{
+    private static string CaminhoTemporario() => Path.Combine(Path.GetTempPath(), $"relatorio_categoria_{Guid.NewGuid():N}.pdf");
+
+    [Fact]
+    public void Gerar_ComDadosReais_CriaUmPdfValido()
+    {
+        var loja = new DataStore();
+        var categorias = new RelatorioService(loja).GerarConsumoPorCategoria(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31, 23, 59, 59));
+        var caminho = CaminhoTemporario();
+
+        try
+        {
+            RelatorioCategoriaPdf.Gerar(caminho, categorias, TipoPeriodo.Anual, new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), "Teste");
+
+            var bytes = File.ReadAllBytes(caminho);
+            Assert.StartsWith("%PDF-", Encoding.ASCII.GetString(bytes, 0, 5));
+            Assert.True(bytes.Length > 5_000);
+        }
+        finally
+        {
+            File.Delete(caminho);
+        }
+    }
+
+    [Fact]
+    public void Gerar_SemNenhumaSaida_AindaCriaOPdf()
+    {
+        var loja = new DataStore();
+        loja.Movimentacoes.Clear();
+        var categorias = new RelatorioService(loja).GerarConsumoPorCategoria(new DateTime(2026, 1, 1), new DateTime(2026, 1, 31));
+        var caminho = CaminhoTemporario();
+
+        try
+        {
+            RelatorioCategoriaPdf.Gerar(caminho, categorias, TipoPeriodo.Mensal, new DateTime(2026, 1, 1), new DateTime(2026, 1, 31), null);
+
+            Assert.True(new FileInfo(caminho).Length > 0);
+        }
+        finally
+        {
+            File.Delete(caminho);
+        }
+    }
+
+    [Theory]
+    [InlineData(TipoPeriodo.Mensal, "Relatorio_Por_Categoria_CEAN_Mensal_2026-03.pdf")]
+    [InlineData(TipoPeriodo.Trimestral, "Relatorio_Por_Categoria_CEAN_Trimestral_2026-T1.pdf")]
+    [InlineData(TipoPeriodo.Anual, "Relatorio_Por_Categoria_CEAN_Anual_2026.pdf")]
+    public void NomeSugerido_IdentificaOPeriodo(TipoPeriodo tipo, string esperado)
+    {
+        Assert.Equal(esperado, RelatorioCategoriaPdf.NomeSugerido(tipo, new DateTime(2026, 3, 1), new DateTime(2026, 3, 31)));
+    }
+}

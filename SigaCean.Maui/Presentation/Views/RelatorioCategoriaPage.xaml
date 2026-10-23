@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:SigaCean.Presentation.Views"
+             xmlns:viewmodels="clr-namespace:SigaCean.Presentation.ViewModels"
+             x:Class="SigaCean.Presentation.Views.RelatorioCategoriaPage"
+             Title="Relatório por Categoria">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="18">
+
+            <views:CabecalhoView x:Name="CabecalhoControl" />
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Relatório por Categoria" Style="{StaticResource PageTitle}" />
+                <Label Text="Uso do estoque por categoria e quais produtos foram os mais e os menos usados em cada uma." Style="{StaticResource PageSubtitle}" />
+            </VerticalStackLayout>
+
+            <Border Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Período" Style="{StaticResource FieldLabel}" />
+                    <views:SeletorPeriodoView x:Name="SeletorPeriodo" PeriodoAlterado="OnPeriodoAlterado" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Resumo do período" Style="{StaticResource CardTitle}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" x:Name="GerarPdfButton" Text="Gerar PDF" Style="{StaticResource GreenButton}" Clicked="OnGerarPdfClicked" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label x:Name="ResumoUsadoLabel" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Red}" />
+                            <Label Text="Unidades usadas (saídas)" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label x:Name="ResumoCategoriasLabel" FontSize="22" FontAttributes="Bold" />
+                            <Label Text="Categorias com uso" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label x:Name="ResumoMaisUsadaLabel" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                            <Label Text="Categoria mais usada" Style="{StaticResource MutedLabel}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Label x:Name="MensagemLabel" IsVisible="False" Style="{StaticResource MutedLabel}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Uso por categoria" Style="{StaticResource CardTitle}" />
+            <Label x:Name="SemUsoLabel" Text="Nenhuma saída registrada neste período." Style="{StaticResource MutedLabel}" IsVisible="False" />
+
+            <VerticalStackLayout x:Name="CategoriasLista" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:CategoriaCartao">
+                        <Border Padding="0">
+                            <Grid ColumnDefinitions="8,*">
+                                <BoxView Grid.Column="0" Color="{Binding Cor}" CornerRadius="0" />
+                                <VerticalStackLayout Grid.Column="1" Padding="16,12" Spacing="3">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" Text="{Binding Nome}" FontAttributes="Bold" FontSize="15" />
+                                        <Label Grid.Column="1" Text="{Binding ParticipacaoTexto}" IsVisible="{Binding MostrarParticipacao}" Style="{StaticResource MutedLabel}" VerticalOptions="Center" />
+                                    </Grid>
+                                    <Label Text="{Binding Resumo}" Style="{StaticResource MutedLabel}" />
+                                    <Label Text="{Binding MaisUsadoTexto}" />
+                                    <Label Text="{Binding MenosUsadoTexto}" IsVisible="{Binding MostrarMenosUsado}" />
+                                    <Label Text="{Binding SemSaidaTexto}" IsVisible="{Binding MostrarSemSaida}" Style="{StaticResource MutedLabel}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

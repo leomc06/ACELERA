@@ -26,6 +26,7 @@
     <Compile Include="..\SigaCean.Maui\Presentation\Reports\**\*.cs" LinkBase="Reports" />
     <Compile Include="..\SigaCean.Maui\Presentation\Rotulos.cs" LinkBase="Presentation" />
     <Compile Include="..\SigaCean.Maui\Presentation\TextosDeEstoque.cs" LinkBase="Presentation" />
+    <Compile Include="..\SigaCean.Maui\Presentation\TextosDeConsumo.cs" LinkBase="Presentation" />
   </ItemGroup>
 
   <ItemGroup>

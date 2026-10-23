@@ -191,7 +191,7 @@ public partial class RelatorioConsumoPage : ContentPage
 
         try
         {
-            var caminho = await EscolherArquivoParaSalvarAsync(RelatorioConsumoPdf.NomeSugerido(_tipo, _inicio, _fim));
+            var caminho = await SalvarComo.PdfAsync(RelatorioConsumoPdf.NomeSugerido(_tipo, _inicio, _fim));
             if (caminho is null) return; // usuario cancelou a escolha
 
             var categoria = Categorias[Math.Max(CategoriaPicker.SelectedIndex, 0)].Texto;
@@ -206,23 +206,6 @@ public partial class RelatorioConsumoPage : ContentPage
         }
     }
 
-    // Janela "Salvar como" do Windows; devolve null se o usuario cancelar.
-    private static async Task<string?> EscolherArquivoParaSalvarAsync(string nomeSugerido)
-    {
-        var seletor = new Windows.Storage.Pickers.FileSavePicker
-        {
-            SuggestedFileName = Path.GetFileNameWithoutExtension(nomeSugerido),
-            SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary
-        };
-        seletor.FileTypeChoices.Add("Documento PDF", [".pdf"]);
-
-        var janela = Application.Current?.Windows[0].Handler?.PlatformView as Microsoft.UI.Xaml.Window;
-        if (janela is null) return null;
-        WinRT.Interop.InitializeWithWindow.Initialize(seletor, WinRT.Interop.WindowNative.GetWindowHandle(janela));
-
-        var arquivo = await seletor.PickSaveFileAsync();
-        return arquivo?.Path;
-    }
 
     private void MostrarMensagem(string? texto)
     {

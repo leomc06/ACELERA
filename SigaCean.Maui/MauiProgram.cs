@@ -79,6 +79,8 @@ public static class MauiProgram
 		builder.Services.AddTransient<MovimentacoesPage>();
 		builder.Services.AddTransient<AjusteBalancoPage>();
 		builder.Services.AddTransient<RelatorioConsumoPage>();
+		builder.Services.AddTransient<GraficosPage>();
+		builder.Services.AddTransient<RelatorioCategoriaPage>();
 		builder.Services.AddTransient<CorrigirCancelarMovimentacaoPage>();
 		builder.Services.AddTransient<ProdutoDetalhePage>();
 

@@ -7,7 +7,7 @@ public class MovimentacaoService(DataStore dataStore)
 {
     public EntradaEstoque RegistrarEntrada(
         Produto produto, int quantidade, TipoOrigemEntrada tipoOrigem,
-        string? numeroAF, string? detalheOrigem, DateOnly? dataValidade, Usuario? responsavel,
+        string? identificacaoOrigem, string? detalheOrigem, DateOnly? dataValidade, Usuario? responsavel,
         string? documento = null)
     {
         ValidarMovimentacao(produto, quantidade);
@@ -17,7 +17,7 @@ public class MovimentacaoService(DataStore dataStore)
             Produto = produto,
             Quantidade = quantidade,
             TipoOrigem = tipoOrigem,
-            NumeroAF = numeroAF,
+            IdentificacaoOrigem = identificacaoOrigem,
             Documento = documento,
             DetalheOrigem = detalheOrigem,
             DataValidade = dataValidade,

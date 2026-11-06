@@ -85,14 +85,14 @@ public static class ImportadorHistoricoCean
     private static EntradaEstoque CriarEntrada(Produto produto, LinhaHistoricoCean linha, DateTime data, string observacao)
     {
         TipoOrigemEntrada? tipo = null;
-        string? numeroAF = null;
+        string? identificacaoOrigem = null;
         string? detalhe = null;
 
         if (observacao.StartsWith("COMPRA", StringComparison.OrdinalIgnoreCase))
         {
             tipo = TipoOrigemEntrada.Compra;
             var af = Regex.Match(observacao, @"\bAF\s+(\d+/\d+)", RegexOptions.IgnoreCase);
-            if (af.Success) numeroAF = af.Groups[1].Value;
+            if (af.Success) identificacaoOrigem = af.Groups[1].Value;
             else detalhe = DepoisDoPontoEVirgula(observacao);
         }
         else if (observacao.StartsWith("DOA", StringComparison.OrdinalIgnoreCase))
@@ -111,7 +111,7 @@ public static class ImportadorHistoricoCean
             Quantidade = linha.Quantidade,
             Data = data,
             TipoOrigem = tipo,
-            NumeroAF = numeroAF,
+            IdentificacaoOrigem = identificacaoOrigem,
             DetalheOrigem = detalhe
         };
     }

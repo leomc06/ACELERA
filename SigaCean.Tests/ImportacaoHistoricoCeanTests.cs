@@ -42,7 +42,7 @@ public class ImportacaoHistoricoCeanTests
 
         var e = Unica<EntradaEstoque>(r);
         Assert.Equal(TipoOrigemEntrada.Compra, e.TipoOrigem);
-        Assert.Equal("002000/2025", e.NumeroAF);
+        Assert.Equal("002000/2025", e.IdentificacaoOrigem);
         Assert.Null(e.DetalheOrigem);
     }
 
@@ -53,7 +53,7 @@ public class ImportacaoHistoricoCeanTests
 
         var e = Unica<EntradaEstoque>(r);
         Assert.Equal(TipoOrigemEntrada.Compra, e.TipoOrigem);
-        Assert.Null(e.NumeroAF);
+        Assert.Null(e.IdentificacaoOrigem);
         Assert.Equal("AF, ALC/2026", e.DetalheOrigem);
     }
 
@@ -221,8 +221,8 @@ public class ImportacaoHistoricoCeanTests
 
         var compras = loja.Movimentacoes.OfType<EntradaEstoque>().Where(e => e.TipoOrigem == TipoOrigemEntrada.Compra).ToList();
         Assert.Equal(19, compras.Count);
-        Assert.Equal(18, compras.Count(e => e.NumeroAF is not null));
-        Assert.Contains(compras, e => e.NumeroAF == "002000/2025");
+        Assert.Equal(18, compras.Count(e => e.IdentificacaoOrigem is not null));
+        Assert.Contains(compras, e => e.IdentificacaoOrigem == "002000/2025");
     }
 
     [Fact]

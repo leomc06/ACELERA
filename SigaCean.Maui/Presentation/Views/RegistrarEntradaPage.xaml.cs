@@ -104,7 +104,7 @@ public partial class RegistrarEntradaPage : ContentPage
                 produto,
                 quantidade,
                 tipoOrigem,
-                string.IsNullOrWhiteSpace(NumeroAfEntry.Text) ? null : NumeroAfEntry.Text.Trim(),
+                string.IsNullOrWhiteSpace(IdentificacaoOrigemEntry.Text) ? null : IdentificacaoOrigemEntry.Text.Trim(),
                 string.IsNullOrWhiteSpace(DetalheOrigemEntry.Text) ? null : DetalheOrigemEntry.Text.Trim(),
                 dataValidade,
                 _usuarioService.UsuarioLogado,

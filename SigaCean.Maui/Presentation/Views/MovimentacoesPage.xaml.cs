@@ -64,7 +64,7 @@ public partial class MovimentacoesPage : ContentPage
     private void PreencherUsuarioLogado()
     {
         var usuario = _usuarioService.UsuarioLogado;
-        AcoesAdministrativoLayout.IsVisible = usuario?.Perfil == Perfil.Administrativo;
+        AcoesPorPerfil.Aplicar(AcoesLayout, SaidaButton, usuario);
         CabecalhoControl.Atualizar(usuario);
     }
 

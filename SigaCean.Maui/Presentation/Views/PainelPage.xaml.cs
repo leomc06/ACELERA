@@ -33,7 +33,7 @@ public partial class PainelPage : ContentPage
 
         var usuario = _usuarioService.UsuarioLogado;
         CabecalhoControl.Atualizar(usuario);
-        AcoesAdministrativoLayout.IsVisible = usuario?.Perfil == Perfil.Administrativo;
+        AcoesPorPerfil.Aplicar(AcoesLayout, SaidaButton, usuario);
         AvisoBannerControl.Mostrar(_avisoService.Consumir());
 
         DesenharIndicadores();

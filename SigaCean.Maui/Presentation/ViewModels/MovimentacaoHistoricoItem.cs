@@ -67,7 +67,7 @@ public class MovimentacaoHistoricoItem
         };
 
         var partes = new List<string> { tipo };
-        if (!string.IsNullOrWhiteSpace(e.NumeroAF)) partes.Add($"AF {e.NumeroAF}");
+        if (!string.IsNullOrWhiteSpace(e.NumeroAF)) partes.Add($"id. origem {e.NumeroAF}");
         if (!string.IsNullOrWhiteSpace(e.Documento)) partes.Add($"doc. {e.Documento}");
         if (!string.IsNullOrWhiteSpace(e.DetalheOrigem)) partes.Add(e.DetalheOrigem);
         if (e.DataValidade is not null) partes.Add($"val. {e.DataValidade:dd/MM/yyyy}");

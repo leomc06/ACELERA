@@ -18,9 +18,9 @@
                 <Label Text="Histórico de entradas, saídas e ajustes de balanço." Style="{StaticResource PageSubtitle}" />
             </VerticalStackLayout>
 
-            <FlexLayout x:Name="AcoesAdministrativoLayout" JustifyContent="Start" Wrap="Wrap" AlignItems="Start" Margin="-4,-8,0,0">
+            <FlexLayout x:Name="AcoesLayout" JustifyContent="Start" Wrap="Wrap" AlignItems="Start" Margin="-4,-8,0,0">
                 <Button Text="＋ Entrada" Style="{StaticResource GreenButton}" Clicked="OnEntradaClicked" Margin="4" />
-                <Button Text="− Saída" Style="{StaticResource OrangeButton}" Clicked="OnSaidaClicked" Margin="4" />
+                <Button x:Name="SaidaButton" Text="− Saída" Style="{StaticResource OrangeButton}" Clicked="OnSaidaClicked" Margin="4" />
             </FlexLayout>
 
             <Border Padding="16">

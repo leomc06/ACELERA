@@ -14,9 +14,9 @@ Os dados ficam **somente em memória**: ao fechar o programa, tudo volta ao esta
 - Cadastro de produtos e consulta do estoque, com busca por nome (ignora maiúsculas e acentos), filtro por categoria
   e botões de situação com a contagem de cada uma (sem estoque, crítico, abaixo do mínimo, validade próxima, vencido)
 - Ficha do produto: situação, saldos por validade na ordem em que saem (FEFO) e últimas movimentações; o
-  Veterinário só consulta, e o Administrativo tem atalhos de entrada, saída e edição
+  Veterinário consulta e registra saídas; o Administrativo também tem atalhos de entrada e edição
 - Categorias: Medicamento, Insumo, Alimentar, Equipamento hospitalar, Higiene e Microchip
-- Registro de entradas (com documento: nota fiscal ou pedido, e validade opcional) e de saídas (com destino e
+- Registro de entradas (com identificação de origem, documento: nota fiscal ou pedido, e validade opcional) e de saídas (com destino e
   quem retirou, ambos obrigatórios); a saída usa primeiro o que vence antes e a tela mostra de qual validade
   o produto vai sair antes de confirmar
 - Ajuste de balanço
@@ -28,7 +28,7 @@ Os dados ficam **somente em memória**: ao fechar o programa, tudo volta ao esta
   produto mais e o menos usado dentro de cada categoria (só o perfil Administrativo)
 - Relatório por Categoria, na tela e em PDF: uso de cada categoria e seus produtos mais e menos usados
 - Confirmação antes de gravar e faixa de aviso depois de cada operação
-- Controle de acesso por usuário, com botão Sair para trocar de usuário
+- Controle de acesso por usuário, com botão Sair para trocar de usuário: o Veterinário consulta e registra saídas; o resto é do Administrativo
 - Teclado: Enter envia os formulários e o login; no login há "Mostrar senha"
 
 ## Requisitos
@@ -78,7 +78,7 @@ Usuários fictícios, criados só para demonstração:
 dotnet test SigaCean.Tests
 ```
 
-São 214 testes das regras de estoque, validade, estoque mínimo, movimentações (inclusive correção e
+São 219 testes das regras de estoque, validade, estoque mínimo, movimentações (inclusive correção e
 cancelamento), busca, histórico, relatório, PDF e login. Os Services também são testados sozinhos (a tela não é a única
 barreira): saída sem "retirado por", produto duplicado e ids inexistentes são recusados sem alterar nada.
 

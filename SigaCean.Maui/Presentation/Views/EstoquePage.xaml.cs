@@ -52,7 +52,7 @@ public partial class EstoquePage : ContentPage
 	private void PreencherUsuarioLogado()
 	{
 		var usuario = _usuarioService.UsuarioLogado;
-		AcoesAdministrativoLayout.IsVisible = usuario?.Perfil == Perfil.Administrativo;
+		AcoesPorPerfil.Aplicar(AcoesLayout, SaidaButton, usuario);
 		CabecalhoControl.Atualizar(usuario);
 	}
 
@@ -134,7 +134,7 @@ public partial class EstoquePage : ContentPage
 		await Navigation.PushAsync(pagina);
 	}
 
-	// Os dois perfis veem a ficha do produto (consulta); as acoes administrativas ficam escondidas para o Veterinario.
+	// Os dois perfis veem a ficha do produto (consulta); entrada, ajuste e cadastro ficam escondidos para o Veterinario (que so pode registrar saida).
 	private async void OnProdutoTapped(object? sender, TappedEventArgs e)
 	{
 		if (sender is not Border border || border.BindingContext is not ProdutoEstoqueItem item) return;

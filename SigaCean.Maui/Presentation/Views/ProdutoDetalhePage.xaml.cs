@@ -6,7 +6,7 @@ using SigaCean.Services;
 namespace SigaCean.Presentation.Views;
 
 // Ficha de consulta de um produto: situacao, saldos por validade (na ordem FEFO) e as ultimas movimentacoes.
-// Os dois perfis consultam; as acoes (entrada, saida, editar) so aparecem para o Administrativo.
+// Os dois perfis consultam e registram saida; entrada e edicao so aparecem para o Administrativo.
 public partial class ProdutoDetalhePage : ContentPage
 {
     private const int MovimentacoesExibidas = 10;
@@ -49,7 +49,7 @@ public partial class ProdutoDetalhePage : ContentPage
 
         NomeLabel.Text = produto.Nome;
         CategoriaLabel.Text = item.Categoria;
-        AcoesAdministrativoLayout.IsVisible = _usuarioService.UsuarioLogado?.Perfil == Perfil.Administrativo;
+        AcoesPorPerfil.Aplicar(AcoesLayout, SaidaButton, _usuarioService.UsuarioLogado);
 
         QuantidadeLabel.Text = item.QuantidadeAtual.ToString();
         QuantidadeLabel.TextColor = item.CorSaude;

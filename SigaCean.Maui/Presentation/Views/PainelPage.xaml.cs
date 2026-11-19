@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SigaCean.Domain;
 using SigaCean.Presentation.ViewModels;
 using SigaCean.Services;
@@ -14,17 +13,15 @@ public partial class PainelPage : ContentPage
     private readonly MovimentacaoService _movimentacaoService;
     private readonly UsuarioService _usuarioService;
     private readonly AvisoService _avisoService;
-    private readonly IServiceProvider _serviceProvider;
 
     public PainelPage(EstoqueService estoqueService, MovimentacaoService movimentacaoService,
-        UsuarioService usuarioService, AvisoService avisoService, IServiceProvider serviceProvider)
+        UsuarioService usuarioService, AvisoService avisoService)
     {
         InitializeComponent();
         _estoqueService = estoqueService;
         _movimentacaoService = movimentacaoService;
         _usuarioService = usuarioService;
         _avisoService = avisoService;
-        _serviceProvider = serviceProvider;
     }
 
     protected override void OnAppearing()
@@ -33,7 +30,6 @@ public partial class PainelPage : ContentPage
 
         var usuario = _usuarioService.UsuarioLogado;
         CabecalhoControl.Atualizar(usuario);
-        AcoesPorPerfil.Aplicar(AcoesLayout, SaidaButton, usuario);
         AvisoBannerControl.Mostrar(_avisoService.Consumir());
 
         DesenharIndicadores();
@@ -86,10 +82,4 @@ public partial class PainelPage : ContentPage
     }
 
     private void OnVerTodasClicked(object? sender, EventArgs e) => (Shell.Current as AppShell)?.IrParaMovimentacoes();
-
-    private async void OnEntradaClicked(object? sender, EventArgs e) =>
-        await Navigation.PushAsync(_serviceProvider.GetRequiredService<RegistrarEntradaPage>());
-
-    private async void OnSaidaClicked(object? sender, EventArgs e) =>
-        await Navigation.PushAsync(_serviceProvider.GetRequiredService<RegistrarSaidaPage>());
 }

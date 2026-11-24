@@ -41,8 +41,6 @@
             <Border Padding="18">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Saldos por validade" Style="{StaticResource CardTitle}" />
-                    <Label Text="Na ordem em que saem do estoque (FEFO): o que vence primeiro sai primeiro; o que não tem validade sai por último."
-                           Style="{StaticResource MutedLabel}" />
                     <Label x:Name="SemSaldosLabel" Text="Este produto não tem nada em estoque." Style="{StaticResource MutedLabel}" IsVisible="False" />
                     <VerticalStackLayout x:Name="SaldosLayout" Spacing="6">
                         <BindableLayout.ItemTemplate>

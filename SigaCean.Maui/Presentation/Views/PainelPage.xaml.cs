@@ -45,10 +45,13 @@ public partial class PainelPage : ContentPage
     private void DesenharIndicadores()
     {
         IndicadoresLayout.Children.Clear();
+        // Mesma ordem dos botões de situação da tela de Estoque.
+        AdicionarIndicador("Todos", SituacaoEstoque.Todos, "#153B43");
         AdicionarIndicador("Sem estoque", SituacaoEstoque.SemEstoque, "#D95757");
+        AdicionarIndicador("Estoque crítico", SituacaoEstoque.Critico, "#D95757");
         AdicionarIndicador("Abaixo do mínimo", SituacaoEstoque.AbaixoDoMinimo, "#D95757");
-        AdicionarIndicador("Vencidos", SituacaoEstoque.Vencido, "#D95757");
         AdicionarIndicador("Validade próxima", SituacaoEstoque.ValidadeProxima, "#F59B24");
+        AdicionarIndicador("Vencidos", SituacaoEstoque.Vencido, "#D95757");
     }
 
     private void AdicionarIndicador(string titulo, SituacaoEstoque situacao, string corZerado)

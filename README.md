@@ -9,7 +9,7 @@ Os dados ficam **somente em memória**: ao fechar o programa, tudo volta ao esta
 
 ## Funcionalidades
 
-- Painel inicial com o que precisa de atenção (sem estoque, abaixo do mínimo, vencidos, validade próxima); cada quadro
+- Painel inicial com o total de produtos e o que precisa de atenção (sem estoque, estoque crítico, abaixo do mínimo, validade próxima, vencidos); cada quadro
   abre o Estoque já filtrado
 - Cadastro de produtos e consulta do estoque, com busca por nome (ignora maiúsculas e acentos), filtro por categoria
   e botões de situação com a contagem de cada uma (sem estoque, crítico, abaixo do mínimo, validade próxima, vencido)

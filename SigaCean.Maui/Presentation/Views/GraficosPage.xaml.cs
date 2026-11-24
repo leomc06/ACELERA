@@ -1,5 +1,4 @@
 using SigaCean.Domain;
-using SigaCean.Presentation.ViewModels;
 using SigaCean.Services;
 
 namespace SigaCean.Presentation.Views;
@@ -104,7 +103,6 @@ public partial class GraficosPage : ContentPage
         AvisoPeriodoLabel.Text = $"{SeletorPeriodo.Descricao}. O período vale para o uso (saídas); o estoque atual e o número de produtos são sempre de hoje.";
 
         AtualizarPrincipal();
-        AtualizarCartoes();
 
         // Se ainda nao ha categoria escolhida (ou ela ficou sem uso), abre o detalhe na mais usada do periodo.
         if (CategoriaPicker.SelectedIndex < 0 || _consumo.All(c => c.TotalSaidas == 0))
@@ -154,16 +152,6 @@ public partial class GraficosPage : ContentPage
             PercentualTexto = TextosDeConsumo.Percentual(f.Valor, total),
             Cor = f.Cor
         }).ToList());
-    }
-
-    private void AtualizarCartoes()
-    {
-        // As categorias com produtos primeiro; dentro delas, as mais usadas no topo.
-        BindableLayout.SetItemsSource(CartoesLista, _consumo
-            .OrderByDescending(c => c.QuantidadeDeProdutos > 0)
-            .ThenByDescending(c => c.TotalSaidas)
-            .Select(c => new CategoriaCartao(c, _consumo.Sum(x => x.TotalSaidas)))
-            .ToList());
     }
 
     private void AtualizarDetalhe()

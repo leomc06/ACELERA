@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SigaCean.Presentation"
              xmlns:views="clr-namespace:SigaCean.Presentation.Views"
-             xmlns:viewmodels="clr-namespace:SigaCean.Presentation.ViewModels"
              x:Class="SigaCean.Presentation.Views.GraficosPage"
              Title="Gráficos">
 
@@ -58,32 +57,6 @@
                     </VerticalStackLayout>
                 </Grid>
             </Border>
-
-            <!-- Mais e menos usado dentro de cada categoria -->
-            <Label Text="Mais e menos usado em cada categoria" Style="{StaticResource CardTitle}" Margin="0,8,0,0" />
-            <Label Text="Uso = saídas registradas no período escolhido. Entradas e ajustes de balanço não contam." Style="{StaticResource MutedLabel}" />
-
-            <VerticalStackLayout x:Name="CartoesLista" Spacing="10">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:CategoriaCartao">
-                        <Border Padding="0">
-                            <Grid ColumnDefinitions="8,*">
-                                <BoxView Grid.Column="0" Color="{Binding Cor}" CornerRadius="0" />
-                                <VerticalStackLayout Grid.Column="1" Padding="16,12" Spacing="3">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <Label Grid.Column="0" Text="{Binding Nome}" FontAttributes="Bold" FontSize="15" />
-                                        <Label Grid.Column="1" Text="{Binding ParticipacaoTexto}" IsVisible="{Binding MostrarParticipacao}" Style="{StaticResource MutedLabel}" VerticalOptions="Center" />
-                                    </Grid>
-                                    <Label Text="{Binding Resumo}" Style="{StaticResource MutedLabel}" />
-                                    <Label Text="{Binding MaisUsadoTexto}" />
-                                    <Label Text="{Binding MenosUsadoTexto}" IsVisible="{Binding MostrarMenosUsado}" />
-                                    <Label Text="{Binding SemSaidaTexto}" IsVisible="{Binding MostrarSemSaida}" Style="{StaticResource MutedLabel}" />
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
 
             <!-- Produtos de uma categoria -->
             <Label x:Name="TituloDetalheLabel" Style="{StaticResource CardTitle}" Margin="0,8,0,0" />
